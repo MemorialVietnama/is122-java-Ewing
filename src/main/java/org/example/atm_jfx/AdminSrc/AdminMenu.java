@@ -26,7 +26,7 @@ public class AdminMenu {
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(25, 25, 25, 25));
-        vbox.setTranslateY(-700);
+        vbox.setTranslateY(-600);
         vbox.setTranslateX(-1300);
 
         // Загрузка фонового изображения
