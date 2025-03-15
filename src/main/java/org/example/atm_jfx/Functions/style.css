@@ -1,0 +1,99 @@
+/* Основные стили */
+.root {
+    -fx-background: red;
+}
+
+/* Заголовки */
+.label-title {
+    -fx-font-family: 'Arial';
+    -fx-font-size: 48px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Ошибки */
+.label-error {
+    -fx-font-family: 'Arial';
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+
+/* Кнопки */
+.button-main {
+    -fx-font-family: 'Arial';
+    -fx-font-weight: bold;
+    -fx-background-color: white;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-text-fill: red;
+}
+
+.button-main:hover {
+    -fx-background-color: lightgray;
+}
+
+.button-number {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Arial';
+    -fx-text-fill: white;
+    -fx-background-color: red;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+}
+
+.button-number:pressed {
+    -fx-text-fill: black;
+    -fx-background-color: white;
+    -fx-border-color: black;
+}
+
+/* Основные стили для окна */
+.dialog-pane {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+}
+
+/* Стили для текста */
+.label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Стили для текстового поля */
+.text-field {
+    -fx-background-color: #34495e;
+    -fx-text-fill: white;
+    -fx-border-color: #1abc9c;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+}
+
+/* Стили для слайдера */
+.slider {
+    -fx-control-inner-background: #34495e;
+    -fx-show-tick-labels: true;
+    -fx-show-tick-marks: true;
+    -fx-major-tick-unit: 50;
+    -fx-minor-tick-count: 5;
+    -fx-block-increment: 10;
+}
+
+/* Стили для кнопки */
+.button {
+    -fx-background-color: #1abc9c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #16a085;
+}
