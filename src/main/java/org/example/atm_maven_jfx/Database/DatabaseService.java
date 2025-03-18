@@ -10,15 +10,16 @@ import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.OutPutMoney.MoneyWi
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.SettingsCardMenu;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.TransactionHistoryMenu;
 
+import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
 
 public class DatabaseService {
-
     // Константы подключения к базе данных
-    private static final String JDBC_URL = "jdbc:firebirdsql:localhost/3050:C:/ATMV_MODEL_DBASE";
+    private static final String DATABASE_PATH = "src/main/java/org/example/atm_maven_jfx/Database/ATM_MODEL_DBASE.fdb"; // Относительный путь с расширением
+    private static final String JDBC_URL = "jdbc:firebirdsql:localhost/3050:" + new File(DATABASE_PATH).getAbsolutePath();
     private static final String USER = "SYSDBA";
     private static final String PASSWORD = "010802";
 
@@ -59,7 +60,27 @@ public class DatabaseService {
             ORDER BY co.DDATE_STAMP DESC
             """;
 
+    public static void main(String[] args) {
+        // Проверка существования файла
+        File dbFile = new File(DATABASE_PATH);
+        if (!dbFile.exists()) {
+            System.out.println("Файл базы данных не найден: " + dbFile.getAbsolutePath());
+            return;
+        }
 
+        try {
+            // Загрузка драйвера Firebird
+            Class.forName("org.firebirdsql.jdbc.FBDriver");
+
+            // Подключение к базе данных
+            Connection connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+            System.out.println("Соединение установлено успешно!");
+            connection.close();
+        } catch (Exception e) {
+            System.err.println("Ошибка подключения: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     // Метод для получения соединения с базой данных
     public static Connection getConnection() throws SQLException {
         try {

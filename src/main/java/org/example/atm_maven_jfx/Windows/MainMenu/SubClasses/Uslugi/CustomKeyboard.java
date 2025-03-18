@@ -27,17 +27,17 @@ public class CustomKeyboard implements CustomKeyboardInterfaces {
         updateLetterKeyboard(grid);
 
         Button switchButton = createButton("Сменить Язык");
-        switchButton.setOnAction(_ -> {
+        switchButton.setOnAction(event -> {
             isRussian = !isRussian;
             updateLetterKeyboard(grid);
         });
 
         Button spaceButton = createButton(" ");
         spaceButton.setMinWidth(600);
-        spaceButton.setOnAction(_ -> textField.appendText(" "));
+        spaceButton.setOnAction(event -> textField.appendText(" "));
 
         Button clearInput = createButton("Стереть");
-        clearInput.setOnAction(_ -> textField.setText(""));
+        clearInput.setOnAction(event -> textField.setText(""));
 
         HBox controlBox = new HBox(10);
         controlBox.setAlignment(Pos.CENTER);
@@ -73,7 +73,7 @@ public class CustomKeyboard implements CustomKeyboardInterfaces {
                 -fx-cursor: hand;
                 """);
 
-        button.setOnMousePressed(_ -> {
+        button.setOnMousePressed(event -> {
             button.setStyle("""
                     -fx-font-family: 'Arial Black';
                     -fx-font-weight: bold;
@@ -89,7 +89,7 @@ public class CustomKeyboard implements CustomKeyboardInterfaces {
                     """);
         });
 
-        button.setOnMouseReleased(_ -> {
+        button.setOnMouseReleased(event -> {
             button.setStyle("""
                     -fx-font-family: 'Arial Black';
                     -fx-font-weight: bold;
@@ -110,7 +110,7 @@ public class CustomKeyboard implements CustomKeyboardInterfaces {
 
     private void addKeyButton(GridPane grid, String key, int row, int col) {
         Button button = createButton(key);
-        button.setOnAction(_ -> textField.appendText(button.getText()));
+        button.setOnAction(event -> textField.appendText(button.getText()));
         grid.add(button, col, row);
     }
 

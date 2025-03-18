@@ -117,7 +117,7 @@ public class FirstAuth extends Application implements AuthInterface {
         connectionStatusLabel.setTextFill(Color.WHITE);
         authLayout.add(connectionStatusLabel, 1, 7);
 
-        btn.setOnAction(_ -> {
+        btn.setOnAction(event -> {
             String user = userTextField.getText();
             String password = pwBox.getText();
 
