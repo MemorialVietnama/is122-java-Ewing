@@ -22,6 +22,7 @@ public class DatabaseService {
     private static final String JDBC_URL = "jdbc:firebirdsql:localhost/3050:" + new File(DATABASE_PATH).getAbsolutePath();
     private static final String USER = "SYSDBA";
     private static final String PASSWORD = "010802";
+    /// sql
 
     // SQL-запросы
     private static final String AUTHENTICATE_USER_QUERY = "{call AUTHENTICATE_USER(?, ?)}";
