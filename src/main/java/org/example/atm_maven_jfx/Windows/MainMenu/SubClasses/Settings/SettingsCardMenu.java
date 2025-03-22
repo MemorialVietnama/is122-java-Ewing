@@ -36,7 +36,7 @@ public abstract class SettingsCardMenu implements SettingsMenu {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setTranslateY(-50);
-        root.setStyle("-fx-background-color: red; -fx-padding: 40px;");
+        root.setStyle("-fx-background-color: red;");
 
         InfoPanel infoPanel = new InfoPanel();
         infoPanel.setAlignment(Pos.CENTER);

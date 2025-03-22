@@ -1,7 +1,7 @@
 package org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.interfaces;
 
 
-import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incossations;
+import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,5 +17,5 @@ public interface DatabaseService {
 
     Map<Integer, Integer> getCurrentCashCount() throws SQLException;
 
-    List<Incossations.CashStorage> getCashToRemove(int amountToRemove) throws SQLException;
+    List<Incantations.CashStorage> getCashToRemove(int amountToRemove) throws SQLException;
 }

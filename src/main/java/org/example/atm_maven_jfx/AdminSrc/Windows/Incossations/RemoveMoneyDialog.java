@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class RemoveMoneyDialog {
 
-    public static boolean display(TableView<Incossations.CashStorage> tableView) {
+    public static boolean display(TableView<Incantations.CashStorage> tableView) {
         boolean[] isDataRemoved = {false};
 
         Stage window = new Stage();

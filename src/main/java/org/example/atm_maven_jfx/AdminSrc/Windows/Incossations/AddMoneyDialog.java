@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class AddMoneyDialog {
 
-    public static boolean display(TableView<Incossations.CashStorage> tableView) {
+    public static boolean display(TableView<Incantations.CashStorage> tableView) {
         boolean[] isDataAdded = {false};
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);

@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Functions.InfoPanel;
+import org.example.atm_maven_jfx.Functions.SceneTransition;
 import org.example.atm_maven_jfx.Functions.SessionWarning;
 
 import java.sql.SQLException;
@@ -22,15 +23,12 @@ public class AuthWithNumberCard {
     private static final int MAX_CARD_LENGTH = 16;
     private final Scene scene;
     private final Stage primaryStage;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private SessionWarning sessionWarning;
 
     public AuthWithNumberCard(Stage primaryStage, Scene previousScene) {
         this.primaryStage = primaryStage;
 
-        // Создаем объект SessionWarning
         sessionWarning = new SessionWarning(primaryStage);
-
-        // Запускаем проверку бездействия
         sessionWarning.checkInactivity();
 
         InfoPanel infoPanel = new InfoPanel();
@@ -38,9 +36,8 @@ public class AuthWithNumberCard {
 
         Label authLabel = createLabel();
         TextField cardNumberField = createCardNumberField();
-        Button backButton = createButton(() -> primaryStage.setScene(previousScene));
+        Button backButton = createButton(() -> primaryStage.setScene(previousScene), previousScene);
 
-        // Создаем Label для сообщения об ошибке
         Label errorLabel = createErrorLabel();
         errorLabel.setVisible(false); // Скрываем по умолчанию
 
@@ -58,7 +55,7 @@ public class AuthWithNumberCard {
         Label label = new Label("Вход по номеру карты");
         label.setStyle(
                 "-fx-font-family: 'Arial';" +
-                        "-fx-font-size: " + 48 + "px;" +
+                        "-fx-font-size: 48px;" +
                         "-fx-font-weight: bold;" +
                         "-fx-text-fill: white;"
         );
@@ -100,17 +97,14 @@ public class AuthWithNumberCard {
                         "-fx-alignment: center;" +
                         "-fx-font-weight: bold;"
         );
-
-        // Сброс таймера при вводе текста
         field.setOnKeyTyped(event -> sessionWarning.checkInactivity());
-
         return field;
     }
 
-    private Button createButton(Runnable action) {
+    private Button createButton(Runnable action, Scene previousScene) {
         Button button = new Button("Назад");
         button.setStyle(
-                "-fx-font-size: " + 48 + "px;" +
+                "-fx-font-size: 48px;" +
                         "-fx-font-family: 'Arial';" +
                         "-fx-font-weight: bold;" +
                         "-fx-text-fill: red;" +
@@ -118,8 +112,8 @@ public class AuthWithNumberCard {
                         "-fx-border-color: white;" +
                         "-fx-border-width: 2px;" +
                         "-fx-border-radius: 5px;" +
-                        "-fx-min-width: " + (48 == 48 ? "150px" : "60px") + ";" +
-                        "-fx-min-height: " + (48 == 48 ? "50px" : "60px") + ";"
+                        "-fx-min-width: 150px;" +
+                        "-fx-min-height: 50px;"
         );
         DropShadow shadow = new DropShadow();
         shadow.setColor(Color.rgb(0, 0, 0, 0.5));
@@ -128,8 +122,8 @@ public class AuthWithNumberCard {
         shadow.setOffsetY(3);
         button.setEffect(shadow);
         button.setOnAction(event -> {
-            action.run();
-            sessionWarning.checkInactivity(); // Сбрасываем таймер при нажатии кнопки
+            SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
+            sessionWarning.stopInactivityCheck(); // Остановить таймер вместо сброса
         });
         return button;
     }
@@ -141,66 +135,53 @@ public class AuthWithNumberCard {
         keypad.setPadding(new Insets(10));
         keypad.setAlignment(Pos.CENTER);
 
-        String[] keys = {
-                "1", "2", "3",
-                "4", "5", "6",
-                "7", "8", "9",
-                "C", "0", "->"
-        };
-
+        String[] keys = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "->"};
         int index = 0;
         for (int row = 0; row < 4; row++) {
             for (int col = 0; col < 3; col++) {
                 if (index >= keys.length) break;
                 Button button = new Button(keys[index]);
                 button.setStyle("""
-                            -fx-font-family: 'Arial Black';
-                            -fx-font-weight: bold;
-                            -fx-text-fill: white;
-                            -fx-font-size: 28px;
-                            -fx-padding: 20px;
-                            -fx-min-width: 90px;
-                            -fx-min-height: 90px;
-                            -fx-background-color: red;
-                            -fx-border-color: white;
-                            -fx-border-width: 2px;
-                            -fx-cursor: hand;
+                        -fx-font-family: 'Arial Black';
+                        -fx-font-weight: bold;
+                        -fx-text-fill: white;
+                        -fx-font-size: 28px;
+                        -fx-padding: 20px;
+                        -fx-min-width: 90px;
+                        -fx-min-height: 90px;
+                        -fx-background-color: red;
+                        -fx-border-color: white;
+                        -fx-border-width: 2px;
+                        -fx-cursor: hand;
                         """);
                 String key = keys[index];
 
-                // Handle button events
-                button.setOnMousePressed(event -> {
-                    button.setStyle("""
-                            -fx-font-family: 'Arial Black';
-                            -fx-font-weight: bold;
-                            -fx-text-fill: black;
-                            -fx-font-size: 28px;
-                            -fx-padding: 20px;
-                            -fx-min-width: 90px;
-                            -fx-min-height: 90px;
-                            -fx-background-color: white;
-                            -fx-border-color: white;
-                            -fx-border-width: 2px;
-                            -fx-cursor: hand;
-                            """
-                    );
-                });
-
-                button.setOnMouseReleased(event -> {
-                    button.setStyle("""
-                                -fx-font-family: 'Arial Black';
-                                -fx-font-weight: bold;
-                                -fx-text-fill: white;
-                                -fx-font-size: 28px;
-                                -fx-padding: 20px;
-                                -fx-min-width: 90px;
-                                -fx-min-height: 90px;
-                                -fx-background-color: red;
-                                -fx-border-color: white;
-                                -fx-border-width: 2px;
-                                -fx-cursor: hand;
-                            """);
-                });
+                button.setOnMousePressed(event -> button.setStyle("""
+                        -fx-font-family: 'Arial Black';
+                        -fx-font-weight: bold;
+                        -fx-text-fill: black;
+                        -fx-font-size: 28px;
+                        -fx-padding: 20px;
+                        -fx-min-width: 90px;
+                        -fx-min-height: 90px;
+                        -fx-background-color: white;
+                        -fx-border-color: white;
+                        -fx-border-width: 2px;
+                        -fx-cursor: hand;
+                        """));
+                button.setOnMouseReleased(event -> button.setStyle("""
+                        -fx-font-family: 'Arial Black';
+                        -fx-font-weight: bold;
+                        -fx-text-fill: white;
+                        -fx-font-size: 28px;
+                        -fx-padding: 20px;
+                        -fx-min-width: 90px;
+                        -fx-min-height: 90px;
+                        -fx-background-color: red;
+                        -fx-border-color: white;
+                        -fx-border-width: 2px;
+                        -fx-cursor: hand;
+                        """));
 
                 if (key.equals("C")) {
                     button.setOnAction(event -> {
@@ -210,22 +191,18 @@ public class AuthWithNumberCard {
                     });
                 } else if (key.equals("->")) {
                     button.setOnAction(event -> {
-                        if (sessionWarning != null) {
-                            sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
-                        }
                         String cardNumber = cardNumberField.getText();
                         try {
-                            // Используем метод из DatabaseService для проверки карты
                             boolean cardExists = DatabaseService.checkCardInDatabase(cardNumber);
                             if (cardExists) {
-                                // Переход к следующему окну, например, вводу пин-кода
-                                primaryStage.setScene(new PinCode(primaryStage, this.scene, cardNumber).getScene());
+                                sessionWarning.stopInactivityCheck(); // Остановить таймер перед переходом на PinCode
+                                SceneTransition.changeSceneWithAnimation(primaryStage, new PinCode(primaryStage, this.scene, cardNumber).getScene());
                             } else {
-                                errorLabel.setVisible(true); // Показываем сообщение об ошибке
+                                errorLabel.setVisible(true);
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
-                            errorLabel.setVisible(true); // Показываем сообщение об ошибке в случае исключения
+                            errorLabel.setVisible(true);
                         }
                     });
                 } else {
@@ -234,15 +211,13 @@ public class AuthWithNumberCard {
                         if (currentText.length() < MAX_CARD_LENGTH) {
                             cardNumberField.setText(currentText + key);
                         }
-                        sessionWarning.checkInactivity(); // Сбрасываем таймер
+                        sessionWarning.checkInactivity();
                     });
                 }
-
                 keypad.add(button, col, row);
                 index++;
             }
         }
-
         return keypad;
     }
 

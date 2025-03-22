@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Functions.InfoPanel;
+import org.example.atm_maven_jfx.Functions.SceneTransition;
 import org.example.atm_maven_jfx.Functions.SessionWarning;
 import org.example.atm_maven_jfx.Windows.MainMenu.MainMenu;
 
@@ -44,7 +45,7 @@ public class PinCode {
 
         Label pinLabel = createLabel("Введите пин-код", 62);
         PasswordField pinField = createPinField();
-        Button backButton = createButton(() -> primaryStage.setScene(previousScene));
+        Button backButton = createButton(() -> primaryStage.setScene(previousScene), previousScene);
 
         // Label для отображения ошибок
         Label errorLabel = createLabel("", 24); // Инициализация Label для ошибок
@@ -105,7 +106,7 @@ public class PinCode {
         return field;
     }
 
-    private Button createButton(Runnable action) {
+    private Button createButton(Runnable action, Scene previousScene) {
         Button button = new Button("Назад");
         button.setStyle(
                 "-fx-font-size: " + 36 + "px;" +
@@ -126,8 +127,8 @@ public class PinCode {
         shadow.setOffsetY(3);
         button.setEffect(shadow);
         button.setOnAction(event -> {
-            action.run();
-            sessionWarning.checkInactivity(); // Сбрасываем таймер при нажатии кнопки
+            SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
+            sessionWarning.stopInactivityCheck(); // Сбрасываем таймер при нажатии кнопки
         });
         return button;
     }
@@ -236,7 +237,7 @@ public class PinCode {
                     // Логирование успешного входа
                     logOperation(cardNumber, "Успешный вход в систему");
                     MainMenu mainMenu = new MainMenu(primaryStage, scene, cardNumber);
-                    primaryStage.setScene(mainMenu.getScene());
+                    SceneTransition.changeSceneWithAnimation(primaryStage, mainMenu.getScene());;
                 } else {
                     // Логирование неудачного входа
                     logOperation(cardNumber, "Неверный пин-код");

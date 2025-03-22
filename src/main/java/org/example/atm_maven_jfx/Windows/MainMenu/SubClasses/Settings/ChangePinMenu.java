@@ -60,7 +60,6 @@ public class ChangePinMenu implements ChangePinMenuInterface {
         titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;");
 
         TextField oldPinField = new TextField();
-        oldPinField.setPromptText("Старый PIN");
         oldPinField.setStyle("-fx-font-size: 24px; -fx-padding: 15px; -fx-border-color: white; -fx-border-width: 2px; -fx-text-fill: black; -fx-alignment: center; -fx-font-family: 'Arial';");
         oldPinField.setMaxWidth(400);
         oldPinField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, change -> {
@@ -71,7 +70,6 @@ public class ChangePinMenu implements ChangePinMenuInterface {
         }));
 
         TextField newPinField = new TextField();
-        newPinField.setPromptText("Новый PIN");
         newPinField.setMaxWidth(400);
         newPinField.setStyle("-fx-font-size: 24px; -fx-padding: 15px; -fx-border-color: white; -fx-border-width: 2px; -fx-text-fill: black; -fx-alignment: center; -fx-font-family: 'Arial';");
         newPinField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, change -> {
@@ -82,7 +80,6 @@ public class ChangePinMenu implements ChangePinMenuInterface {
         }));
 
         TextField confirmPinField = new TextField();
-        confirmPinField.setPromptText("Подтвердите новый PIN");
         confirmPinField.setMaxWidth(400);
         confirmPinField.setStyle("-fx-font-size: 24px; -fx-padding: 15px; -fx-border-color: white; -fx-border-width: 2px; -fx-text-fill: black; -fx-alignment: center; -fx-font-family: 'Arial';");
         confirmPinField.setTextFormatter(new TextFormatter<>(new IntegerStringConverter(), 0, change -> {

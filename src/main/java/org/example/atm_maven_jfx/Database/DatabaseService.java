@@ -3,7 +3,7 @@ package org.example.atm_maven_jfx.Database;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
-import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incossations.CashStorage;
+import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations.CashStorage;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.RemoveMoneyAction;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Deposit.DepositOperation;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.OutPutMoney.MoneyWithdrawalScene;
@@ -25,41 +25,31 @@ public class DatabaseService {
     /// sql
 
     // SQL-запросы
-    private static final String AUTHENTICATE_USER_QUERY = "{call AUTHENTICATE_USER(?, ?)}";
-    private static final String LOAD_CASH_STORAGE_QUERY = "{call LOAD_CASH_STORAGE(?,?,?,?,?)}";
-    private static final String CALCULATE_TOTAL_AMOUNT_QUERY = "SELECT SUM(CAST(DENOMINATIONS AS INTEGER)) AS TOTAL_AMOUNT FROM ATM_CASH_STORAGE";
-    private static final String UPDATE_CURRENT_AMOUNT_QUERY = "{call UPDATE_CURRENT_AMOUNT(?,?)}";
-    private static final String LOAD_ATM_BALANCE_QUERY = "{call LOAD_ATM_BALANCE(?)}";
-    private static final String INSERT_CASH_QUERY = "{call INSERT_CASH(?,?,?,?)}";
-    private static final String CHECK_CARD_IN_DATABASE = "{call CHECK_CARD_IN_DATABASE(?)}";
-    private static final String GET_BALANCE_QUERY = "{call GET_BALANCE(?)}";
-    private static final String UPDATE_BALANCE_QUERY = "{call UPDATE_BALANCE(?,?)}";
-    private static final String INSERT_CASH_STORAGE_QUERY = "{call INSERT_CASH_STORAGE(?,?,?,?)}";
-    private static final String CHECK_NOMINAL_EXISTS_QUERY = "SELECT 1 FROM DIC_NOMINAL WHERE NOMINAL = ?";
-    private static final String GET_CLIENT_INFO_QUERY = "SELECT * FROM CLIENT_INFO ci JOIN CLIENT_CARD cc ON ci.FULL_FIO = cc.FK_CLIENT WHERE cc.NUMBER_CARD = ?";
-    private static final String LOG_OPERATION_QUERY = "INSERT INTO CLIENT_OPERATION (CARD_NUM, OPERATION, DDATE_STAMP, COMMENT) VALUES (?, ?, ?, ?)";
-    private static final String LOAD_SERVICES_QUERY = "SELECT ID_SERVICE, NAME_SERVICE, ACTIVE_STATUS FROM SEVICE";
-    private static final String ADD_SERVICE_QUERY = "INSERT INTO SEVICE (NAME_SERVICE, ACTIVE_STATUS) VALUES (?, ?)";
-    private static final String DELETE_SERVICE_QUERY = "DELETE FROM SEVICE WHERE NAME_SERVICE = ?";
-    private static final String UPDATE_SERVICE_STATUS_QUERY = "UPDATE SEVICE SET ACTIVE_STATUS = ? WHERE ID_SERVICE = ?";
-    private static final String CHECK_SERVICE_EXISTS_QUERY = "SELECT COUNT(*) FROM SEVICE WHERE NAME_SERVICE = ?";
-    private static final String GET_LAST_INSERTED_ID_QUERY = "SELECT MAX(ID_SERVICE) AS LAST_ID FROM SEVICE";
-    private static final String GET_ACTIVE_SERVICES_QUERY = "SELECT NAME_SERVICE FROM SEVICE WHERE ACTIVE_STATUS = TRUE";
-    private static final String GET_CASH_TO_REMOVE_QUERY = "SELECT ID_CASH, ID_ATM, DENOMINATIONS, SERIAL_NUMBER, DATE_INSERTED FROM ATM_CASH_STORAGE ORDER BY DENOMINATIONS DESC, DATE_INSERTED ASC";
-    private static final String DELETE_CASH_QUERY = "DELETE FROM ATM_CASH_STORAGE WHERE ID_CASH = ?";
-    private static final String GET_CASH_STORAGE_DATA_QUERY = "SELECT DENOMINATIONS, SERIAL_NUMBER FROM ATM_CASH_STORAGE";
-    private static final String DELETE_ISSUED_BILLS_QUERY = "DELETE FROM ATM_CASH_STORAGE WHERE SERIAL_NUMBER = ?";
-    private static final String GET_CURRENT_CASH_COUNT = "SELECT DN.NOMINAL AS Nominal, COUNT(ACS.ID_CASH) AS Quantity \" +\n" +
-            "                \"FROM ATM_CASH_STORAGE ACS \" +\n" +
-            "                \"JOIN DIC_NOMINAL DN ON ACS.DENOMINATIONS = DN.NOMINAL \" +\n" +
-            "                \"GROUP BY DN.NOMINAL";
-    private static final String TRANSACTION_HISTORY_QUERY = """
-            SELECT co.CARD_NUM, co.OPERATION, co.DDATE_STAMP, co.COMMENT
-            FROM CLIENT_OPERATION co
-            JOIN CLIENT_CARD cc ON co.CARD_NUM = cc.NUMBER_CARD
-            WHERE cc.FK_CLIENT = (SELECT FK_CLIENT FROM CLIENT_CARD WHERE NUMBER_CARD = ?)
-            ORDER BY co.DDATE_STAMP DESC
-            """;
+    private static final String AUTHENTICATE_USER_QUERY = "{call AUTHENTICATE_USER(?, ?)}";  // Авторизация
+    private static final String LOAD_CASH_STORAGE_QUERY = "{call GET_ATM_CASH_STORAGE()}"; // Получение списка банкнот в банкомате
+    private static final String CALCULATE_TOTAL_AMOUNT_QUERY = "{CALL GET_TOTAL_AMOUNT_IN_ATM()}"; // Получение суммы всех банкнот в банкомате
+    private static final String UPDATE_CURRENT_AMOUNT_QUERY = "{call UPDATE_CURRENT_AMOUNT(?,?)}"; // Обновить баланс банкомата
+    private static final String LOAD_ATM_BALANCE_QUERY = "{call LOAD_ATM_BALANCE()}"; // Получение сводки банкомата
+    private static final String INSERT_CASH_QUERY = "{call INSERT_CASH(?,?,?,?)}"; // Вставка денег (Инкассация)
+    private static final String CHECK_CARD_IN_DATABASE = "{call CHECK_CARD_IN_DATABASE(?)}";  // Проверка карты в БД
+    private static final String GET_BALANCE_QUERY = "{call GET_BALANCE(?)}"; // ПОлучение баланса карты
+    private static final String UPDATE_BALANCE_QUERY = "{call UPDATE_BALANCE(?,?)}"; // Обновить баланс карты
+    private static final String CHECK_NOMINAL_EXISTS_QUERY = "{CALL CHECK_NOMINAL_EXISTS(?)}"; // Проверка существования купюры
+    private static final String GET_CLIENT_INFO_QUERY = "{CALL GET_CLIENT_INFO(?)}"; // Получение данных о клиента
+    private static final String LOG_OPERATION_QUERY = "{CALL LOG_OPERATION(?, ?, ?, ?)}"; // Логирование
+    private static final String LOAD_SERVICES_QUERY = "{CALL GET_SERVICES()}"; // Получение списка сервисов
+    private static final String ADD_SERVICE_QUERY = "{CALL INSERT_SERVICE(?, ?)}"; // Добавление сервиса
+    private static final String DELETE_SERVICE_QUERY = "{CALL DELETE_SERVICE_BY_NAME(?)}"; // Удаление сервиса
+    private static final String UPDATE_SERVICE_STATUS_QUERY = "{CALL UPDATE_SERVICE_STATUS(?, ?)}"; // Обновить статус
+    private static final String CHECK_SERVICE_EXISTS_QUERY = "{CALL COUNT_SERVICES_BY_NAME(?)}"; // Подсчет сервисов
+    private static final String GET_LAST_INSERTED_ID_QUERY = "{CALL GET_LAST_SERVICE_ID()}"; // Получение последнего ID сервисов
+    private static final String GET_ACTIVE_SERVICES_QUERY = "{CALL GET_ACTIVE_SERVICES}"; // Получение активных Сервисов
+    private static final String GET_CASH_TO_REMOVE_QUERY = "{CALL GET_ATM_CASH_STORAGE()}"; // Баланс Банкомата
+    private static final String DELETE_CASH_QUERY = "{CALL DELETE_ATM_CASH_BY_ID(?)}"; // Изьятие денег из банкомата по ID
+    private static final String GET_CASH_STORAGE_DATA_QUERY = "{CALL GET_ATM_CASH_DENOMINATIONS()}"; // Вывод номинала и номера
+    private static final String DELETE_ISSUED_BILLS_QUERY = "{CALL DELETE_ATM_CASH_BY_SERIAL(?)}"; // Изьятие по номиналу
+    private static final String GET_CURRENT_CASH_COUNT = "{CALL GET_ATM_CASH_QUANTITY_BY_NOMINAL()}"; // Вывод кол-во купюры
+    private static final String TRANSACTION_HISTORY_QUERY = "{CALL GET_CLIENT_OPERATIONS(?)}"; // Получение истории клиента
 
     public static void main(String[] args) {
         // Проверка существования файла
@@ -116,19 +106,21 @@ public class DatabaseService {
         List<CashStorage> cashStorageList = new ArrayList<>();
 
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(LOAD_CASH_STORAGE_QUERY)) {
+             CallableStatement stmt = conn.prepareCall(LOAD_CASH_STORAGE_QUERY);
+             ResultSet rs = stmt.executeQuery()) {
 
+            int rowCount = 0;
             while (rs.next()) {
                 CashStorage cashStorage = new CashStorage(
                         rs.getString("ID_CASH"),
                         rs.getString("ID_ATM"),
-                        rs.getString("DENOMINATIONS"),
+                        String.valueOf(rs.getFloat("DENOMINATIONS")), // Оставлено как строка для совместимости
                         rs.getString("SERIAL_NUMBER"),
                         rs.getTimestamp("DATE_INSERTED")
                 );
                 cashStorageList.add(cashStorage);
             }
+            System.out.println("Total rows loaded: " + rowCount);
         }
 
         return cashStorageList;
@@ -346,13 +338,18 @@ public class DatabaseService {
     // Метод для загрузки всех услуг из таблицы SEVICE
     public static List<ServiceManagement.Service> loadServices() throws SQLException {
         List<ServiceManagement.Service> services = new ArrayList<>();
+        String query = "SELECT ID_SERVICE, NAME_SERVICE, ACTIVE_STATUS FROM SEVICE";
+
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(LOAD_SERVICES_QUERY)) {
+             ResultSet rs = stmt.executeQuery(query)) {
+
             while (rs.next()) {
                 long id = rs.getLong("ID_SERVICE");
                 String name = rs.getString("NAME_SERVICE");
                 boolean activeStatus = rs.getBoolean("ACTIVE_STATUS");
+
+                System.out.println("Загружена услуга: ID=" + id + ", Name=" + name + ", ActiveStatus=" + activeStatus);
                 services.add(new ServiceManagement.Service(id, name, activeStatus));
             }
         }
@@ -482,7 +479,7 @@ public class DatabaseService {
      */
     public static boolean addBanknotesToStorage(List<DepositOperation.Denomination> banknotes) {
         try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(INSERT_CASH_STORAGE_QUERY)) {
+             PreparedStatement pstmt = conn.prepareStatement(INSERT_CASH_QUERY)) {
 
             for (DepositOperation.Denomination banknote : banknotes) {
                 String denomination = banknote.getDemonition().replace(" руб.", "");
@@ -519,10 +516,23 @@ public class DatabaseService {
      * @return true, если номинал существует, иначе false.
      */
     private static boolean doesNominalExist(String denomination, Connection conn) throws SQLException {
-        try (PreparedStatement checkStmt = conn.prepareStatement(CHECK_NOMINAL_EXISTS_QUERY)) {
-            checkStmt.setString(1, denomination);
-            return checkStmt.executeQuery().next();
+        // Проверка входных параметров
+        if (denomination == null || denomination.isEmpty()) {
+            throw new IllegalArgumentException("Номинал не может быть null или пустым.");
         }
+
+        try (CallableStatement callableStmt = conn.prepareCall(CHECK_NOMINAL_EXISTS_QUERY )) {
+            callableStmt.setString(1, denomination);
+
+            // Выполнение процедуры
+            try (ResultSet resultSet = callableStmt.executeQuery()) {
+                if (resultSet.next()) {
+                    int existsFlag = resultSet.getInt("EXISTS_FLAG");
+                    return existsFlag == 1; // Возвращаем true, если флаг равен 1
+                }
+            }
+        }
+        return false; // Если результат не получен, считаем, что номинал не существует
     }
 
     /**

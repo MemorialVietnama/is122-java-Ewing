@@ -31,9 +31,9 @@ public class ServiceManagement {
     private Scene createScene(Stage primaryStage, Scene previousScene) {
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.setPadding(new Insets(20));
-        root.setTranslateX(-500);
         root.setTranslateY(-500);
+        root.setTranslateX(-400);
+        root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f4f4f4;");
 
         // Заголовок
@@ -42,56 +42,61 @@ public class ServiceManagement {
 
         // Таблица услуг
         TableView<Service> tableView = new TableView<>();
-        tableView.setPrefSize(500, 300); // Фиксированный размер таблицы
-        tableView.setMaxWidth(500);
+        tableView.setPrefSize(100, 300);
         tableView.setEditable(true);
+        tableView.setMaxWidth(800);
+        tableView.columnResizePolicyProperty().set(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        // Колонка Название Услуги
+        // Колонка "Выбрать" для выбора строк
+        TableColumn<Service, Boolean> selectColumn = new TableColumn<>("Выбрать");
+        selectColumn.setCellValueFactory(cellData ->
+                cellData.getValue().selectedProperty()
+        );
+        selectColumn.setCellFactory(CheckBoxTableCell.forTableColumn(selectColumn));
+        selectColumn.setEditable(true);
+        selectColumn.setPrefWidth(100); // Фиксированная ширина
+
+        // Колонка "Название"
         TableColumn<Service, String> nameColumn = new TableColumn<>("Название");
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        nameColumn.setPrefWidth(300);
+        nameColumn.setCellValueFactory(cellData ->
+                cellData.getValue().nameProperty()
+        );
+        nameColumn.setPrefWidth(100); // Фиксированная ширина
 
+        // Колонка "Статус" с чекбоксами
         TableColumn<Service, Boolean> activeStatusColumn = new TableColumn<>("Статус");
-        activeStatusColumn.setCellValueFactory(cellData -> cellData.getValue().activeStatusProperty());
+        activeStatusColumn.setCellValueFactory(cellData ->
+                cellData.getValue().activeStatusProperty()
+        );
         activeStatusColumn.setCellFactory(CheckBoxTableCell.forTableColumn(activeStatusColumn));
-        activeStatusColumn.setPrefWidth(200);
-
-        activeStatusColumn.setOnEditCommit(event -> {
-            Service service = event.getRowValue();
-            boolean newActiveStatus = event.getNewValue();
-            service.setActiveStatus(newActiveStatus); // Обновляем состояние в модели
-        });
+        activeStatusColumn.setEditable(true);
+        activeStatusColumn.setPrefWidth(100); // Фиксированная ширина
 
         // Добавляем колонки в таблицу
-        tableView.getColumns().addAll(nameColumn, activeStatusColumn);
+        tableView.getColumns().addAll(selectColumn, nameColumn, activeStatusColumn);
 
-        // Кнопки Добавить, Удалить и Сохранить
+        // Кнопки
         Button addButton = new Button("Добавить");
-        addButton.setStyle("-fx-background-color: green; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 100px;");
         addButton.setOnAction(event -> addService(tableView));
 
         Button deleteButton = new Button("Удалить");
-        deleteButton.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 100px;");
         deleteButton.setOnAction(event -> deleteSelectedServices(tableView));
 
         Button saveButton = new Button("Сохранить Конфигурацию");
-        saveButton.setStyle("-fx-background-color: blue; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 200px;");
         saveButton.setOnAction(event -> saveConfiguration(tableView));
 
         HBox buttonBox = new HBox(10, addButton, deleteButton, saveButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        // Кнопка Назад
+        // Кнопка "Назад"
         Button backButton = new Button("Назад");
-        backButton.setStyle("-fx-background-color: gray; -fx-text-fill: white; -fx-font-size: 14px; -fx-pref-width: 100px;");
         backButton.setOnAction(event -> primaryStage.setScene(previousScene));
 
         // Загрузка данных из БД
         loadServicesFromDatabase(tableView);
 
         root.getChildren().addAll(titleLabel, tableView, buttonBox, backButton);
-
-        return new Scene(root, 800, 600); // Размер окна
+        return new Scene(root, 800, 600);
     }
 
     private void loadServicesFromDatabase(TableView<Service> tableView) {
@@ -102,6 +107,12 @@ public class ServiceManagement {
             tableView.setItems(null); // Очищаем данные
             tableView.setItems(services); // Устанавливаем новые данные
             tableView.refresh(); // Обновляем таблицу
+
+            // Отладочная информация
+            System.out.println("Загружено услуг: " + services.size());
+            for (Service service : services) {
+                System.out.println("ID=" + service.getId() + ", Name=" + service.getName() + ", ActiveStatus=" + service.isActiveStatus());
+            }
         } catch (SQLException e) {
             System.out.println("Ошибка при загрузке услуг из базы данных: " + e.getMessage());
             showErrorAlert("Не удалось загрузить услуги из базы данных.");
@@ -143,7 +154,7 @@ public class ServiceManagement {
     private void deleteSelectedServices(TableView<Service> tableView) {
         ObservableList<Service> selectedServices = FXCollections.observableArrayList();
         for (Service service : services) {
-            if (service.isSelected()) {
+            if (service.isSelected()) { // Используем метод isSelected()
                 selectedServices.add(service);
             }
         }
@@ -216,15 +227,15 @@ public class ServiceManagement {
 
     public static class Service {
         private final long id;
-        private final StringProperty name; // Используем StringProperty для имени
-        private final BooleanProperty activeStatus; // Используем BooleanProperty для статуса
-        private boolean selected; // Поле для отслеживания состояния выбора
+        private final StringProperty name;
+        private final BooleanProperty activeStatus;
+        private final BooleanProperty selected; // Поле для отслеживания состояния выбора
 
         public Service(long id, String name, boolean activeStatus) {
             this.id = id;
             this.name = new SimpleStringProperty(name);
             this.activeStatus = new SimpleBooleanProperty(activeStatus);
-            this.selected = false; // По умолчанию услуга не выбрана
+            this.selected = new SimpleBooleanProperty(false); // По умолчанию услуга не выбрана
         }
 
         public long getId() {
@@ -256,11 +267,15 @@ public class ServiceManagement {
         }
 
         public boolean isSelected() {
+            return selected.get();
+        }
+
+        public BooleanProperty selectedProperty() {
             return selected;
         }
 
         public void setSelected(boolean selected) {
-            this.selected = selected;
+            this.selected.set(selected);
         }
     }
 }

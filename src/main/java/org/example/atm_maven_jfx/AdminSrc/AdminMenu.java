@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import org.example.atm_maven_jfx.AdminSrc.Functions.ButtonUtil;
 import org.example.atm_maven_jfx.AdminSrc.Functions.StatsUtil;
 import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
-import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incossations;
+import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations;
 import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
 import org.example.atm_maven_jfx.Windows.MainMenu.MainMenu;
 
@@ -63,7 +63,7 @@ public class AdminMenu {
         // Кнопка "Инкассация"
         Button incassationButton = ButtonUtil.createButton("Инкассация", defaultStyle, hoverStyle, pressedStyle);
         incassationButton.setOnAction(e -> {
-            Incossations incossations = new Incossations();
+            Incantations incossations = new Incantations();
             Scene incossationsScene = incossations.createScene(primaryStage, primaryStage.getScene()); // Передаем текущую сцену
             primaryStage.setScene(incossationsScene);
         });
@@ -88,6 +88,10 @@ public class AdminMenu {
         // Кнопка "Запустить"
         Button buttonStart = ButtonUtil.createButton("Запустить", defaultStyle, hoverStyle, pressedStyle);
         vbox.getChildren().add(buttonStart);
+
+        buttonStart.setOnAction(e -> {
+            BlockWindow.showWithPreloader(primaryStage); // Используем существующий Stage
+        });
 
         buttonStart.setOnAction(e -> {
             BlockWindow blockWindow = new BlockWindow();
