@@ -56,8 +56,6 @@ public class WithdrawLoader {
         );
 
         createTextAnimation();
-        root.setTranslateX(-400);
-        root.setTranslateY(-400);
         return new Scene(root, 1920, 1080);
     }
 

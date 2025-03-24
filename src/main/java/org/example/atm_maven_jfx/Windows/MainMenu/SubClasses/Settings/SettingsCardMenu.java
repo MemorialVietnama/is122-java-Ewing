@@ -169,8 +169,6 @@ public abstract class SettingsCardMenu implements SettingsMenu {
         });
 
         root.getChildren().addAll(infoPanel, titleLabel, mainPage, backButton);
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         return new Scene(root, 1920, 1080);
     }
 
@@ -182,5 +180,8 @@ public abstract class SettingsCardMenu implements SettingsMenu {
 
     public record ClientInfo(String fullName, String age, String gender, String dateOfBirth, String passport,
                              String wherePassport, String passportDate, String snils, String inn, String status) {
+        public String fullFio() {
+            return null;
+        }
     }
 }

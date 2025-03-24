@@ -164,9 +164,7 @@ public class ChangePinMenu implements ChangePinMenuInterface {
                 changePinButton,
                 backButton
         );
-        root.setTranslateX(-400);
-        root.setTranslateY(-350);
-
+        root.setTranslateY(-70);
         return new Scene(root, 1920, 1080);
     }
 

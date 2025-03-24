@@ -157,8 +157,6 @@ public class SerialForm implements SerialFormInterface {
         mainPageBox.setStyle("-fx-background-color: red;");
         mainPageBox.getChildren().addAll(infoPanel, headerBox, accountField, confirmButton, errorLabel, gridPane, keyboardDigital, keyboardLetter);
         root.getChildren().addAll(mainPageBox);
-        root.setTranslateX(-400);
-        root.setTranslateY(-290);
         return new Scene(root, 1920, 1080);
     }
 

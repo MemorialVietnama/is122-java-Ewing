@@ -24,6 +24,7 @@ public class LoadingLoadMoney {
         Label animatedLabel = new Label();
         animatedLabel.setStyle("-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold");
 
+        // Анимация текста
         Timeline timeline = new Timeline();
         int delay = 0;
         for (String phrase : phrases) {
@@ -37,7 +38,8 @@ public class LoadingLoadMoney {
             delay += 1000;
         }
 
-        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay + 5000), e -> {
+        // Выполнение операции с базой и возврат на предыдущую сцену
+        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), e -> {
             primaryStage.setScene(returnScene);
         }));
 
@@ -46,8 +48,6 @@ public class LoadingLoadMoney {
 
         VBox layout = new VBox(animatedLabel);
         layout.setAlignment(Pos.CENTER);
-        layout.setTranslateX(-400);
-        layout.setTranslateY(-300);
         layout.setStyle("-fx-background-color: red;");
 
         return new Scene(layout, 1920, 1080);

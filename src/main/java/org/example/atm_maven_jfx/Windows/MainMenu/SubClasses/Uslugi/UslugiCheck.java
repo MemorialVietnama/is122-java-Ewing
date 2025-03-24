@@ -63,8 +63,6 @@ public class UslugiCheck implements ServiceCheck {
         });
 
         root.getChildren().addAll(successLabel, cardNumberLabel, amountLabel, accountNumberLabel, serviceNameLabel, backButton);
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         return new Scene(root, 1920, 1080);
     }
 

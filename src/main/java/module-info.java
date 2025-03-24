@@ -4,8 +4,10 @@ module org.example.atm_maven_jfx {
 
     requires net.synedra.validatorfx;
     requires java.sql;
+    requires junit;
 
     opens org.example.atm_maven_jfx to javafx.fxml, javafx.base;
     opens org.example.atm_maven_jfx.AdminSrc.Window.Service to javafx.fxml, javafx.base;
     exports org.example.atm_maven_jfx;
+    exports org.example.atm_maven_jfx.Database;
 }

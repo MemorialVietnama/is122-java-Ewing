@@ -11,7 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -31,8 +30,6 @@ public class ServiceManagement {
     private Scene createScene(Stage primaryStage, Scene previousScene) {
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
-        root.setTranslateY(-500);
-        root.setTranslateX(-400);
         root.setPadding(new Insets(20));
         root.setStyle("-fx-background-color: #f4f4f4;");
 
@@ -83,7 +80,7 @@ public class ServiceManagement {
         deleteButton.setOnAction(event -> deleteSelectedServices(tableView));
 
         Button saveButton = new Button("Сохранить Конфигурацию");
-        saveButton.setOnAction(event -> saveConfiguration(tableView));
+        saveButton.setOnAction(event -> saveConfiguration());
 
         HBox buttonBox = new HBox(10, addButton, deleteButton, saveButton);
         buttonBox.setAlignment(Pos.CENTER);
@@ -185,7 +182,7 @@ public class ServiceManagement {
         }
     }
 
-    private void saveConfiguration(TableView<Service> tableView) {
+    private void saveConfiguration() {
         System.out.println("Сохранение конфигурации...");
         for (Service service : services) {
             try {
@@ -201,7 +198,7 @@ public class ServiceManagement {
                 showErrorAlert("Не удалось сохранить конфигурацию.");
             }
         }
-        showSuccessAlert("Конфигурация успешно сохранена.");
+        showSuccessAlert();
         System.out.println("Конфигурация успешно сохранена.");
     }
 
@@ -213,11 +210,11 @@ public class ServiceManagement {
         alert.showAndWait();
     }
 
-    private void showSuccessAlert(String message) {
-        System.out.println("Показываем успех: " + "Успех" + " - " + message);
+    private void showSuccessAlert() {
+        System.out.println("Показываем успех: " + "Успех" + " - " + "Конфигурация успешно сохранена.");
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Успех");
-        alert.setHeaderText(message);
+        alert.setHeaderText("Конфигурация успешно сохранена.");
         alert.showAndWait();
     }
 
@@ -250,20 +247,12 @@ public class ServiceManagement {
             return name;
         }
 
-        public void setName(String name) {
-            this.name.set(name);
-        }
-
         public boolean isActiveStatus() {
             return activeStatus.get();
         }
 
         public BooleanProperty activeStatusProperty() {
             return activeStatus;
-        }
-
-        public void setActiveStatus(boolean activeStatus) {
-            this.activeStatus.set(activeStatus);
         }
 
         public boolean isSelected() {
@@ -274,8 +263,5 @@ public class ServiceManagement {
             return selected;
         }
 
-        public void setSelected(boolean selected) {
-            this.selected.set(selected);
-        }
     }
 }

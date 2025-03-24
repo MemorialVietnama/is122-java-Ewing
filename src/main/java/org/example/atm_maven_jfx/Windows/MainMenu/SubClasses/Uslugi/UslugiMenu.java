@@ -201,8 +201,6 @@ public class UslugiMenu implements ServiceMenu {
         mainPageBox.setStyle("-fx-background-color: red;");
         mainPageBox.getChildren().addAll(infoPanel, headerBox, gridPane, paginationBox);
         root.getChildren().addAll(mainPageBox);
-        root.setTranslateX(-400);
-        root.setTranslateY(-290);
 
         // Инициализация кнопок на первой странице
         updateButtons.run();

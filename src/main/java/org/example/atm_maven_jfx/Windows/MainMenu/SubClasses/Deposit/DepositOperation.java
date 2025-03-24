@@ -154,7 +154,7 @@ public class DepositOperation implements DepositOperationInterface {
                 } else {
                     totalAmountLabel.setText("Максимальная сумма пополнения - 15000 руб.");
                 }
-                sessionWarning.checkInactivity(); // Сбрасываем таймер
+                sessionWarning.stopInactivityCheck();// Сбрасываем таймер
             });
             buttonGrid.add(button, i % 3, i / 3);
         }
@@ -199,8 +199,6 @@ public class DepositOperation implements DepositOperationInterface {
             SceneTransition.changeSceneWithAnimation(primaryStage, previousScene); // Возвращаемся назад
         });
 
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         root.getChildren().addAll(titleLabel, totalAmountLabel, table, buttonGrid, backButton, nextButton);
         return new Scene(root, 1920, 1080);
     }

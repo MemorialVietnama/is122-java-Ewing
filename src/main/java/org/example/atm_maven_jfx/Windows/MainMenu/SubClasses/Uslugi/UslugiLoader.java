@@ -86,8 +86,6 @@ public class UslugiLoader implements ServiceLoader {
         mainPageBox.getChildren().addAll(statusLabel, progressCircle);
 
         root.getChildren().addAll(mainPageBox);
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         return new Scene(root, 1920, 1080);
     }
 

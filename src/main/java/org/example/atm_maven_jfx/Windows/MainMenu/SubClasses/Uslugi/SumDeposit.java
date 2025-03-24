@@ -71,7 +71,7 @@ public class SumDeposit {
                 """);
         backButton.setOnAction(event -> {
             primaryStage.setScene(previousScene);
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            sessionWarning.stopInactivityCheck(); // Сбрасываем таймер
         });
 
         amountField = new TextField(); // Инициализируем поле ввода
@@ -130,7 +130,7 @@ public class SumDeposit {
             // Создаем экземпляр UslugiLoader и передаем необходимые данные
             UslugiLoader uslugiLoader = new UslugiLoader(primaryStage, cardNumber, amount, amountField.getText(), tittle);
             primaryStage.setScene(uslugiLoader.getScene());
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            sessionWarning.stopInactivityCheck(); // Сбрасываем таймер
         });
         // Сетка для размещения элементов
         GridPane gridPane = new GridPane();
@@ -148,8 +148,6 @@ public class SumDeposit {
         mainPageBox.setStyle("-fx-background-color: red;");
         mainPageBox.getChildren().addAll(infoPanel, headerBox, amountField, confirmButton, errorLabel, keypad); // Добавляем клавиатуру
         root.getChildren().addAll(mainPageBox);
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         return new Scene(root, 1920, 1080);
     }
 

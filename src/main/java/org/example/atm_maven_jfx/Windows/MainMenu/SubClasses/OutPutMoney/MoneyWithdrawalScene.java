@@ -17,14 +17,18 @@ import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MoneyWithdrawalScene {
+    private static final Logger logger = Logger.getLogger(MoneyWithdrawalScene.class.getName());
+
     private final Scene scene;
     private final String cardNumber;
     private final int amount;
     private final boolean isLargeBills;
     private List<CashStorage> filteredCashStorageList;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning;
 
     public MoneyWithdrawalScene(Stage primaryStage, Scene previousScene, String cardNumber, int amount, boolean isLargeBills) {
         this.cardNumber = cardNumber;
@@ -33,10 +37,10 @@ public class MoneyWithdrawalScene {
         this.scene = createScene(primaryStage, previousScene);
 
         // Создаем объект SessionWarning
-        sessionWarning = new SessionWarning(primaryStage);
+        this.sessionWarning = new SessionWarning(primaryStage);
 
         // Запускаем проверку бездействия
-        sessionWarning.checkInactivity();
+        this.sessionWarning.checkInactivity();
     }
 
     private Scene createScene(Stage primaryStage, Scene previousScene) {
@@ -47,6 +51,28 @@ public class MoneyWithdrawalScene {
         Label titleLabel = new Label("Заберите ваши деньги");
         titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;");
 
+        TableView<CashStorage> cashStorageTable = createCashStorageTable();
+
+        List<CashStorage> cashStorageList;
+        try {
+            cashStorageList = DatabaseService.getCashStorageData();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Ошибка при получении данных о купюрах", e);
+            cashStorageList = new ArrayList<>();
+        }
+
+        filteredCashStorageList = filterCashStorageByAmount(cashStorageList, amount, isLargeBills);
+
+        ObservableList<CashStorage> cashStorageData = FXCollections.observableArrayList(filteredCashStorageList);
+        cashStorageTable.setItems(cashStorageData);
+
+        Button doneButton = createDoneButton(primaryStage);
+
+        root.getChildren().addAll(titleLabel, cashStorageTable, doneButton);
+        return new Scene(root, 1920, 1080);
+    }
+
+    private TableView<CashStorage> createCashStorageTable() {
         TableView<CashStorage> cashStorageTable = new TableView<>();
 
         TableColumn<CashStorage, String> denominationColumn = new TableColumn<>("Номинал");
@@ -66,19 +92,10 @@ public class MoneyWithdrawalScene {
         cashStorageTable.getColumns().add(denominationColumn);
         cashStorageTable.getColumns().add(serialNumberColumn);
 
-        List<CashStorage> cashStorageList;
-        try {
-            cashStorageList = DatabaseService.getCashStorageData();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            cashStorageList = new ArrayList<>();
-        }
+        return cashStorageTable;
+    }
 
-        filteredCashStorageList = filterCashStorageByAmount(cashStorageList, amount, isLargeBills);
-
-        ObservableList<CashStorage> cashStorageData = FXCollections.observableArrayList(filteredCashStorageList);
-        cashStorageTable.setItems(cashStorageData);
-
+    private Button createDoneButton(Stage primaryStage) {
         Button doneButton = new Button("Готово");
         doneButton.setStyle("""
                     -fx-text-fill: red;
@@ -91,9 +108,7 @@ public class MoneyWithdrawalScene {
                 """);
 
         doneButton.setOnAction(event -> {
-            if (sessionWarning != null) {
-                sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
-            }
+            sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             try {
                 DatabaseService.deleteIssuedBills(filteredCashStorageList);
                 DatabaseService.updateCardBalance(cardNumber, amount);
@@ -103,31 +118,32 @@ public class MoneyWithdrawalScene {
                 blockWindow.start(blockStage);
                 primaryStage.hide();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Ошибка при обновлении баланса или удалении купюр", e);
             }
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            sessionWarning.stopInactivityCheck();// Сбрасываем таймер
         });
 
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
-        root.getChildren().addAll(titleLabel, cashStorageTable, doneButton);
-        return new Scene(root, 1920, 1080);
+        return doneButton;
     }
 
     private List<CashStorage> filterCashStorageByAmount(List<CashStorage> cashStorageList, int amount, boolean isLargeBills) {
+        if (cashStorageList == null || cashStorageList.isEmpty()) {
+            throw new IllegalArgumentException("Список купюр пуст.");
+        }
+
         List<CashStorage> filteredList = new ArrayList<>();
         int remainingAmount = amount;
 
         // Сортировка списка купюр по номиналу
         cashStorageList.sort((a, b) -> {
-            int denomA = Integer.parseInt(a.getDenomination());
-            int denomB = Integer.parseInt(b.getDenomination());
-            return isLargeBills ? denomB - denomA : denomA - denomB;
+            double denomA = Double.parseDouble(a.getDenomination()); // Используем Double.parseDouble
+            double denomB = Double.parseDouble(b.getDenomination()); // Используем Double.parseDouble
+            return isLargeBills ? Double.compare(denomB, denomA) : Double.compare(denomA, denomB);
         });
 
         // Фильтрация купюр
         for (CashStorage cashStorage : cashStorageList) {
-            int denomination = Integer.parseInt(cashStorage.getDenomination());
+            double denomination = Double.parseDouble(cashStorage.getDenomination()); // Используем Double.parseDouble
 
             if (denomination <= remainingAmount) {
                 filteredList.add(cashStorage);

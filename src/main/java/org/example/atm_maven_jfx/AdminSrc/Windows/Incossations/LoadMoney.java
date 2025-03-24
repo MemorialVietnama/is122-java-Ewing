@@ -28,8 +28,6 @@ public class LoadMoney {
 
         VBox layout = new VBox(20, instructionLabel, continueButton);
         layout.setAlignment(Pos.CENTER);
-        layout.setTranslateX(-400);
-        layout.setTranslateY(-300);
         layout.setStyle("-fx-background-color: red;");
 
         return new Scene(layout, 1920, 1080);

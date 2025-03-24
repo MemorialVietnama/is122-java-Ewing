@@ -73,27 +73,27 @@ public class Incantations {
 // Столбцы таблицы
         TableColumn<CashStorage, String> idCashColumn = new TableColumn<>("ID Cash");
         idCashColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getIdCash())
+                new SimpleStringProperty(cellData.getValue().idCash())
         );
 
         TableColumn<CashStorage, String> idAtmColumn = new TableColumn<>("ID ATM");
         idAtmColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getIdAtm())
+                new SimpleStringProperty(cellData.getValue().idAtm())
         );
 
         TableColumn<CashStorage, String> denominationsColumn = new TableColumn<>("Denominations");
         denominationsColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDenominations())
+                new SimpleStringProperty(cellData.getValue().denominations())
         );
 
         TableColumn<CashStorage, String> serialNumberColumn = new TableColumn<>("Serial Number");
         serialNumberColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getSerialNumber())
+                new SimpleStringProperty(cellData.getValue().serialNumber())
         );
 
         TableColumn<CashStorage, Timestamp> dateInsertedColumn = new TableColumn<>("Date Inserted");
         dateInsertedColumn.setCellValueFactory(cellData ->
-                new SimpleObjectProperty<>(cellData.getValue().getDateInserted())
+                new SimpleObjectProperty<>(cellData.getValue().dateInserted())
         );
 
         // Добавление столбцов в таблицу
@@ -139,8 +139,6 @@ public class Incantations {
         VBox vbox = new VBox(10, infoPanel, titleLabel, atmBalanceLabel, buttonBox, incassationStatusLabel, statusLabel, tableView);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
-        vbox.setTranslateY(-400);
-        vbox.setTranslateX(-500);
         vbox.setStyle("-fx-background-color: red;");
 
         addMoney.setOnAction(event -> {
@@ -180,39 +178,7 @@ public class Incantations {
         }
     }
 
-    public static class CashStorage {
-        private final String idCash;
-        private final String idAtm;
-        private final String denominations;
-        private final String serialNumber;
-        private final Timestamp dateInserted;
-
-        public CashStorage(String idCash, String idAtm, String denominations, String serialNumber, Timestamp dateInserted) {
-            this.idCash = idCash;
-            this.idAtm = idAtm;
-            this.denominations = denominations;
-            this.serialNumber = serialNumber;
-            this.dateInserted = dateInserted;
-        }
-
-        public String getIdCash() {
-            return idCash;
-        }
-
-        public String getIdAtm() {
-            return idAtm;
-        }
-
-        public String getDenominations() {
-            return denominations;
-        }
-
-        public String getSerialNumber() {
-            return serialNumber;
-        }
-
-        public Timestamp getDateInserted() {
-            return dateInserted;
-        }
+    public record CashStorage(String idCash, String idAtm, String denominations, String serialNumber,
+                              Timestamp dateInserted) {
     }
 }

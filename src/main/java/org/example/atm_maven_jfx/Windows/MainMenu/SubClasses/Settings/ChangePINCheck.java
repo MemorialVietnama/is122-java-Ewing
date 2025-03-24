@@ -49,8 +49,6 @@ public abstract class ChangePINCheck implements ChangePINCheckInterface {
 
         root.getChildren().addAll(successLabel, backButton);
 
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         return new Scene(root, 1920, 1080);
     }
 

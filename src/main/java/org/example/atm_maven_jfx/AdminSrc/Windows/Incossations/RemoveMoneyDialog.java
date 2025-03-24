@@ -7,8 +7,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations;
+import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.RemoveMoneyAction;
 import org.example.atm_maven_jfx.Database.DatabaseService;
-
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -21,9 +22,8 @@ public class RemoveMoneyDialog {
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Убрать деньги");
 
-        // Стили CSS
         String css = """
-                -fx-background-color: #ffebee; /* Красный фон */
+                -fx-background-color: #ffebee;
                 -fx-font-family: 'Arial';
                 -fx-font-size: 14px;
                 """;
@@ -61,15 +61,7 @@ public class RemoveMoneyDialog {
                     return;
                 }
 
-                Map<Integer, Integer> cashCount;
-                try {
-                    cashCount = DatabaseService.getCurrentCashCount();
-                } catch (SQLException ex) {
-                    showAlert("Ошибка при получении данных из базы.");
-                    ex.printStackTrace();
-                    return;
-                }
-
+                Map<Integer, Integer> cashCount = DatabaseService.getCurrentCashCount();
                 if (cashCount.isEmpty()) {
                     showAlert("В банкомате нет денег.");
                     return;
@@ -83,6 +75,7 @@ public class RemoveMoneyDialog {
                     return;
                 }
 
+                isDataRemoved[0] = true;
                 window.close();
 
                 Stage primaryStage = (Stage) tableView.getScene().getWindow();
@@ -91,6 +84,8 @@ public class RemoveMoneyDialog {
 
             } catch (NumberFormatException ex) {
                 showAlert("Введите корректную сумму.");
+            } catch (SQLException ex) {
+                showAlert("Ошибка базы данных.");
             }
         });
 
@@ -112,11 +107,14 @@ public class RemoveMoneyDialog {
         StringBuilder cashInfo = new StringBuilder("Текущее количество банкнот:\n");
         try {
             Map<Integer, Integer> cashCount = DatabaseService.getCurrentCashCount();
-            cashCount.forEach((denomination, count) ->
-                    cashInfo.append(denomination).append(" кредитов: ").append(count).append("\n"));
+            if (cashCount.isEmpty()) {
+                cashInfo.append("Нет данных");
+            } else {
+                cashCount.forEach((denomination, count) ->
+                        cashInfo.append(denomination).append(" кредитов: ").append(count).append("\n"));
+            }
         } catch (SQLException e) {
             cashInfo.append("Ошибка при загрузке данных.");
-            e.printStackTrace();
         }
         label.setText(cashInfo.toString());
     }

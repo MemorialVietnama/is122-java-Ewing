@@ -85,8 +85,6 @@ public class ClientCardsMenu {
         });
 
         root.getChildren().addAll(titleLabel, tableView, backButton);
-        root.setTranslateX(-400);
-        root.setTranslateY(-300);
         return new Scene(root, 1920, 1080);
     }
 

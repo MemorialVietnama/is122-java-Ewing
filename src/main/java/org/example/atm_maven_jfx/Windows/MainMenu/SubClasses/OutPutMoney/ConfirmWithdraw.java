@@ -77,8 +77,6 @@ public class ConfirmWithdraw implements ConfirmWithdrawInterface {
         });
 
         root.getChildren().addAll(titleLabel, largeBillsButton, smallBillsButton);
-        root.setTranslateX(-400);
-        root.setTranslateY(-400);
         return new Scene(root, 1920, 1080);
     }
 

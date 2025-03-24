@@ -88,8 +88,6 @@ public class OutputMoney {
             SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
         });
 
-        root.setTranslateX(-400);
-        root.setTranslateY(-350);
         root.getChildren().addAll(infoPanel, titleLabel, cardNumberLabel, balanceLabel, amountField, errorLabel, keypad, backButton);
         return new Scene(root, 1920, 1080);
     }
