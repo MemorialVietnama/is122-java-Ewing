@@ -1,4 +1,4 @@
-package org.example.atm_maven_jfx.Windows.AuthKeypadCard;
+    package org.example.atm_maven_jfx.Windows.AuthKeypadCard;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +23,7 @@ public class AuthWithNumberCard {
     private static final int MAX_CARD_LENGTH = 16;
     private final Scene scene;
     private final Stage primaryStage;
-    private SessionWarning sessionWarning;
+    private final SessionWarning sessionWarning;
 
     public AuthWithNumberCard(Stage primaryStage, Scene previousScene) {
         this.primaryStage = primaryStage;
@@ -36,7 +36,7 @@ public class AuthWithNumberCard {
 
         Label authLabel = createLabel();
         TextField cardNumberField = createCardNumberField();
-        Button backButton = createButton(() -> primaryStage.setScene(previousScene), previousScene);
+        Button backButton = createButton(previousScene);
 
         Label errorLabel = createErrorLabel();
         errorLabel.setVisible(false); // Скрываем по умолчанию
@@ -78,7 +78,7 @@ public class AuthWithNumberCard {
         field.setPromptText("Введите номер карты");
         field.setPrefWidth(500);
         field.setMaxWidth(500);
-        field.textProperty().addListener((observable, oldValue, newValue) -> {
+        field.textProperty().addListener((_, oldValue, newValue) -> {
             if (newValue.length() > MAX_CARD_LENGTH) {
                 field.setText(oldValue);
             }
@@ -97,11 +97,11 @@ public class AuthWithNumberCard {
                         "-fx-alignment: center;" +
                         "-fx-font-weight: bold;"
         );
-        field.setOnKeyTyped(event -> sessionWarning.checkInactivity());
+        field.setOnKeyTyped(_ -> sessionWarning.checkInactivity());
         return field;
     }
 
-    private Button createButton(Runnable action, Scene previousScene) {
+    private Button createButton(Scene previousScene) {
         Button button = new Button("Назад");
         button.setStyle(
                 "-fx-font-size: 48px;" +
@@ -121,7 +121,7 @@ public class AuthWithNumberCard {
         shadow.setOffsetX(3);
         shadow.setOffsetY(3);
         button.setEffect(shadow);
-        button.setOnAction(event -> {
+        button.setOnAction(_ -> {
             SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
             sessionWarning.stopInactivityCheck(); // Остановить таймер вместо сброса
         });
@@ -156,7 +156,7 @@ public class AuthWithNumberCard {
                         """);
                 String key = keys[index];
 
-                button.setOnMousePressed(event -> button.setStyle("""
+                button.setOnMousePressed(_ -> button.setStyle("""
                         -fx-font-family: 'Arial Black';
                         -fx-font-weight: bold;
                         -fx-text-fill: black;
@@ -169,7 +169,7 @@ public class AuthWithNumberCard {
                         -fx-border-width: 2px;
                         -fx-cursor: hand;
                         """));
-                button.setOnMouseReleased(event -> button.setStyle("""
+                button.setOnMouseReleased(_ -> button.setStyle("""
                         -fx-font-family: 'Arial Black';
                         -fx-font-weight: bold;
                         -fx-text-fill: white;
@@ -184,13 +184,13 @@ public class AuthWithNumberCard {
                         """));
 
                 if (key.equals("C")) {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         cardNumberField.clear();
                         errorLabel.setVisible(false); // Скрываем сообщение об ошибке при очистке поля
                         sessionWarning.checkInactivity(); // Сбрасываем таймер
                     });
                 } else if (key.equals("->")) {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         String cardNumber = cardNumberField.getText();
                         try {
                             boolean cardExists = DatabaseService.checkCardInDatabase(cardNumber);
@@ -206,7 +206,7 @@ public class AuthWithNumberCard {
                         }
                     });
                 } else {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         String currentText = cardNumberField.getText();
                         if (currentText.length() < MAX_CARD_LENGTH) {
                             cardNumberField.setText(currentText + key);

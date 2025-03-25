@@ -6,7 +6,6 @@ import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations.CashStorage;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.RemoveMoneyAction;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Deposit.DepositOperation;
-import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.OutPutMoney.MoneyWithdrawalScene;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.SettingsCardMenu;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.TransactionHistoryMenu;
 
@@ -33,7 +32,7 @@ public class DatabaseService {
     private static final String CHECK_NOMINAL_EXISTS_QUERY = "{CALL CHECK_NOMINAL_EXISTS(?)}";
     private static final String GET_CLIENT_INFO_QUERY = "{CALL GET_CLIENT_INFO(?)}";
     private static final String LOG_OPERATION_QUERY = "{CALL LOG_OPERATION(?, ?, ?, ?)}";
-    private static final String LOAD_SERVICES_QUERY = "{CALL GET_SERVICES()}";
+    // private static final String LOAD_SERVICES_QUERY = "{CALL GET_SERVICES()}";
     private static final String ADD_SERVICE_QUERY = "{CALL INSERT_SERVICE(?, ?)}";
     private static final String DELETE_SERVICE_QUERY = "{CALL DELETE_SERVICE_BY_NAME(?)}";
     private static final String UPDATE_SERVICE_STATUS_QUERY = "{CALL UPDATE_SERVICE_STATUS(?, ?)}";
@@ -42,8 +41,8 @@ public class DatabaseService {
     private static final String GET_ACTIVE_SERVICES_QUERY = "SELECT NAME_SERVICE FROM GET_ACTIVE_SERVICES";
     private static final String GET_CASH_TO_REMOVE_QUERY = "{CALL GET_ATM_CASH_STORAGE()}";
     private static final String DELETE_CASH_QUERY = "{CALL DELETE_ATM_CASH_BY_ID(?)}";
-    private static final String GET_CASH_STORAGE_DATA_QUERY = "{CALL GET_ATM_CASH_DENOMINATIONS()}";
-    private static final String DELETE_ISSUED_BILLS_QUERY = "{CALL DELETE_ATM_CASH_BY_SERIAL(?)}";
+    // private static final String GET_CASH_STORAGE_DATA_QUERY = "{CALL GET_ATM_CASH_DENOMINATIONS()}";
+    // private static final String DELETE_ISSUED_BILLS_QUERY = "{CALL DELETE_ATM_CASH_BY_SERIAL(?)}";
     private static final String GET_CURRENT_CASH_COUNT = "{CALL GET_ATM_CASH_QUANTITY()}";
     private static final String TRANSACTION_HISTORY_QUERY = "{CALL GET_CLIENT_OPERATIONS(?)}";
     private static final String GET_ID_MAX_ATM_CASH = "{CALL GET_MAX_ATM_CASH_ID()}";
@@ -238,7 +237,7 @@ public class DatabaseService {
         for (int i = 0; i < 13; i++) {
             digits.append(random.nextInt(10));
         }
-        String serial = prefix + digits.toString();
+        String serial = prefix + digits;
         System.out.println("DEBUG: Сгенерирован серийный номер: " + serial);
         return serial;
     }
@@ -299,36 +298,6 @@ public class DatabaseService {
         }
     }
 
-    public static List<MoneyWithdrawalScene.CashStorage> getCashStorageData() throws SQLException {
-        System.out.println("DEBUG: Вызов getCashStorageData");
-        List<MoneyWithdrawalScene.CashStorage> cashStorageList = new ArrayList<>();
-        try (Connection connection = getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(GET_CASH_STORAGE_DATA_QUERY)) {
-            while (resultSet.next()) {
-                String denomination = resultSet.getString("DENOMINATIONS");
-                String serialNumber = resultSet.getString("SERIAL_NUMBER");
-                cashStorageList.add(new MoneyWithdrawalScene.CashStorage(denomination, serialNumber));
-                System.out.println("DEBUG: Загружена купюра: " + denomination + ", " + serialNumber);
-            }
-        }
-        return cashStorageList;
-    }
-
-    public static void deleteIssuedBills(List<MoneyWithdrawalScene.CashStorage> issuedBills) throws SQLException {
-        System.out.println("DEBUG: Вызов deleteIssuedBills с количеством купюр=" + issuedBills.size());
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(DELETE_ISSUED_BILLS_QUERY)) {
-            for (MoneyWithdrawalScene.CashStorage bill : issuedBills) {
-                statement.setString(1, bill.getSerialNumber());
-                statement.addBatch();
-                System.out.println("DEBUG: Добавлена купюра для удаления: " + bill.getSerialNumber());
-            }
-            statement.executeBatch();
-            System.out.println("DEBUG: Купюры успешно удалены");
-        }
-    }
-
     public static void updateCardBalance(String cardNumber, double amount) throws SQLException {
         System.out.println("DEBUG: Вызов updateCardBalance с cardNumber=" + cardNumber + ", amount=" + amount);
         try (Connection connection = getConnection();
@@ -336,9 +305,6 @@ public class DatabaseService {
             statement.setDouble(1, amount);
             statement.setString(2, cardNumber);
             int rowsUpdated = statement.executeUpdate();
-            if (rowsUpdated == 0) {
-                throw new SQLException("Карта не найдена.");
-            }
             System.out.println("DEBUG: Баланс карты обновлён, строк обновлено: " + rowsUpdated);
         }
     }
@@ -532,14 +498,14 @@ public class DatabaseService {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(INSERT_CASH_QUERY)) {
             for (DepositOperation.Denomination banknote : banknotes) {
-                String denomination = banknote.getDemonition().replace(" руб.", "");
+                String denomination = banknote.demonition().replace(" руб.", "");
                 if (!doesNominalExist(denomination, conn)) {
                     System.out.println("DEBUG: Номинал " + denomination + " не существует в DIC_NOMINAL");
                     continue;
                 }
                 String idCash = generateUniqueId();
                 String atmId = "123456";
-                String serialNumber = banknote.getSerias();
+                String serialNumber = banknote.serias();
                 pstmt.setString(1, idCash);
                 pstmt.setString(2, atmId);
                 pstmt.setString(3, denomination);

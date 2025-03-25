@@ -23,7 +23,7 @@ public class SceneTransition {
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), currentScene.getRoot());
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(event -> {
+        fadeOut.setOnFinished(_ -> {
             // Устанавливаем красный фон для новой сцены
             newScene.setFill(Color.RED);
             primaryStage.setScene(newScene);

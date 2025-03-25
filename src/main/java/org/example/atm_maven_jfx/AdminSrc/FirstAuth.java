@@ -18,6 +18,7 @@ import org.example.atm_maven_jfx.AdminSrc.Interface.AuthInterface;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class FirstAuth extends Application implements AuthInterface {
 
@@ -57,7 +58,7 @@ public class FirstAuth extends Application implements AuthInterface {
         authLayout.setPadding(new Insets(25, 25, 25, 25));
 
         // Загрузка изображения из ресурсов
-        Image backgroundImage = new Image(getClass().getResource("/org/example/atm_maven_jfx/Assets/header-bg-big.jpg").toExternalForm());
+        Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource("/org/example/atm_maven_jfx/Assets/header-bg-big.jpg")).toExternalForm());
         BackgroundImage background = new BackgroundImage(backgroundImage,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                 new BackgroundSize(100, 100, true, true, true, true));
@@ -99,10 +100,10 @@ public class FirstAuth extends Application implements AuthInterface {
 
         Button btn = new Button("Войти");
         btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;");
-        btn.setOnMouseEntered(e -> btn.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
-        btn.setOnMouseExited(e -> btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
-        btn.setOnMousePressed(e -> btn.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-border-color: red; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
-        btn.setOnMouseReleased(e -> btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
+        btn.setOnMouseEntered(_ -> btn.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
+        btn.setOnMouseExited(_ -> btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
+        btn.setOnMousePressed(_ -> btn.setStyle("-fx-text-fill: white; -fx-background-color: red; -fx-border-color: red; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
+        btn.setOnMouseReleased(_ -> btn.setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-border-color: white; -fx-font-size: 24px; -fx-pref-width: 200px; -fx-pref-height: 50px;"));
 
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
@@ -117,7 +118,7 @@ public class FirstAuth extends Application implements AuthInterface {
         connectionStatusLabel.setTextFill(Color.WHITE);
         authLayout.add(connectionStatusLabel, 1, 7);
 
-        btn.setOnAction(event -> {
+        btn.setOnAction(_ -> {
             String user = userTextField.getText();
             String password = pwBox.getText();
 

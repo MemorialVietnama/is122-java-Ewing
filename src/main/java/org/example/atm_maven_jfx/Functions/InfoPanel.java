@@ -46,7 +46,7 @@ public class InfoPanel extends HBox implements InfoPanelInterface {
 
     private void startDateTimeUpdates() {
         updateDateTime();
-        Timeline dateTimeTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateDateTime()));
+        Timeline dateTimeTimeline = new Timeline(new KeyFrame(Duration.seconds(1), _ -> updateDateTime()));
         dateTimeTimeline.setCycleCount(Timeline.INDEFINITE);
         dateTimeTimeline.play();
     }

@@ -15,15 +15,12 @@ import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Windows.MainMenu.MainMenu;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Uslugi.Interfaces.ServiceLoader;
 
-import java.time.LocalDateTime;
-
 public class UslugiLoader implements ServiceLoader {
     private final Scene scene;
     private final String cardNumber;
     private final double amount;
     private final String accountNumber;
     private final String serviceName;
-    private Scene previousScene;
 
     public UslugiLoader(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName) {
         this.cardNumber = cardNumber;
@@ -54,15 +51,15 @@ public class UslugiLoader implements ServiceLoader {
                 new KeyFrame(Duration.seconds(2), new KeyValue(progressCircle.radiusProperty(), 100))
         );
         timeline.setCycleCount(1);
-        timeline.setOnFinished(event -> {
+        timeline.setOnFinished(_ -> {
             boolean success = DatabaseService.logTransaction(cardNumber, "Оплата Услуги", "Оплата услуги: " + serviceName + ", Сумма: " + amount)
                     && DatabaseService.updateBalance(cardNumber, amount);
 
             if (success) {
                 animateText(statusLabel, Duration.seconds(2), () -> {
                     PauseTransition pause = new PauseTransition(Duration.seconds(3));
-                    pause.setOnFinished(e -> {
-                        UslugiCheck uslugiCheck = new UslugiCheck(primaryStage, cardNumber, amount, accountNumber, serviceName, null);
+                    pause.setOnFinished(_ -> {
+                        UslugiCheck uslugiCheck = new UslugiCheck(primaryStage, cardNumber, amount, accountNumber, serviceName);
                         primaryStage.setScene(uslugiCheck.getScene());
                     });
                     pause.play();
@@ -70,8 +67,8 @@ public class UslugiLoader implements ServiceLoader {
             } else {
                 statusLabel.setText("Ошибка транзакции");
                 PauseTransition pause = new PauseTransition(Duration.seconds(3));
-                pause.setOnFinished(e -> {
-                    MainMenu mainMenu = new MainMenu(primaryStage, null, accountNumber);
+                pause.setOnFinished(_ -> {
+                    MainMenu mainMenu = new MainMenu(primaryStage, accountNumber);
                     primaryStage.setScene(mainMenu.getScene());
                     primaryStage.show();
                 });
@@ -93,10 +90,10 @@ public class UslugiLoader implements ServiceLoader {
         Timeline timeline = new Timeline();
         for (int i = 0; i <= "Транзакция выполняется".length(); i++) {
             String substring = "Транзакция выполняется".substring(0, i);
-            KeyFrame keyFrame = new KeyFrame(duration.multiply((double) i / "Транзакция выполняется".length()), e -> label.setText(substring));
+            KeyFrame keyFrame = new KeyFrame(duration.multiply((double) i / "Транзакция выполняется".length()), _ -> label.setText(substring));
             timeline.getKeyFrames().add(keyFrame);
         }
-        timeline.setOnFinished(e -> onFinished.run());
+        timeline.setOnFinished(_ -> onFinished.run());
         timeline.play();
     }
 
@@ -104,13 +101,4 @@ public class UslugiLoader implements ServiceLoader {
         return scene;
     }
 
-    @Override
-    public boolean logTransaction() {
-        return false;
-    }
-
-    @Override
-    public boolean updateBalance() {
-        return false;
-    }
 }

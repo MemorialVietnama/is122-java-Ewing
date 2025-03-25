@@ -33,7 +33,7 @@ public class SessionWarning {
             System.out.println("Таймер бездействия запущен");
 
             // Создаем таймер бездействия
-            inactivityTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> {
+            inactivityTimeline = new Timeline(new KeyFrame(Duration.seconds(20), _ -> {
                 showWarning(); // Показываем предупреждение после 20 секунд бездействия
             }));
             inactivityTimeline.setCycleCount(1); // Один цикл (20 секунд)
@@ -91,7 +91,7 @@ public class SessionWarning {
         warningStage.show();
 
         countdown = 10;
-        countdownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+        countdownTimeline = new Timeline(new KeyFrame(Duration.seconds(1), _ -> {
             countdown--;
             countdownText.setText(String.valueOf(countdown));
             if (countdown <= 0) {
@@ -103,7 +103,7 @@ public class SessionWarning {
         countdownTimeline.setCycleCount(10);
         countdownTimeline.play();
 
-        continueButton.setOnAction(event -> {
+        continueButton.setOnAction(_ -> {
             countdownTimeline.stop();
             warningStage.close();
             resetInactivityTimer();
@@ -131,7 +131,7 @@ public class SessionWarning {
         if (inactivityTimeline != null) {
             inactivityTimeline.stop(); // Останавливаем текущий таймер
         }
-        inactivityTimeline = new Timeline(new KeyFrame(Duration.seconds(20), event -> {
+        inactivityTimeline = new Timeline(new KeyFrame(Duration.seconds(20), _ -> {
             showWarning(); // Показываем предупреждение после 20 секунд бездействия
         }));
         inactivityTimeline.setCycleCount(1); // Один цикл (20 секунд)

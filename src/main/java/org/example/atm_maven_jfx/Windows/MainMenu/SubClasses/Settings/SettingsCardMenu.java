@@ -13,17 +13,13 @@ import org.example.atm_maven_jfx.Functions.SceneTransition;
 import org.example.atm_maven_jfx.Functions.SessionWarning; // Импортируем SessionWarning
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.Interfaces.SettingsMenu;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 public abstract class SettingsCardMenu implements SettingsMenu {
     private final Scene scene;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
-    public SettingsCardMenu(Stage primaryStage, Scene previousScene, String cardNumber, double balance) {
-        this.scene = createScene(primaryStage, previousScene, cardNumber, balance);
+    public SettingsCardMenu(Stage primaryStage, Scene previousScene, String cardNumber) {
+        this.scene = createScene(primaryStage, previousScene, cardNumber);
 
         // Создаем объект SessionWarning
         sessionWarning = new SessionWarning(primaryStage);
@@ -32,7 +28,7 @@ public abstract class SettingsCardMenu implements SettingsMenu {
         sessionWarning.checkInactivity();
     }
 
-    private Scene createScene(Stage primaryStage, Scene previousScene, String cardNumber, double balance) {
+    private Scene createScene(Stage primaryStage, Scene previousScene, String cardNumber) {
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.setTranslateY(-50);
@@ -93,7 +89,7 @@ public abstract class SettingsCardMenu implements SettingsMenu {
                     -fx-background-color: white;
                     -fx-cursor: hand;
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -150,19 +146,19 @@ public abstract class SettingsCardMenu implements SettingsMenu {
         HBox mainPage = new HBox(10, clientInfoBox, buttonBox);
         mainPage.setAlignment(Pos.CENTER);
 
-        changePin.setOnAction(event -> {
+        changePin.setOnAction(_ -> {
             ChangePinMenu changePinMenu = new ChangePinMenu(primaryStage, scene, cardNumber);
             primaryStage.setScene(changePinMenu.getScene());
 
         });
 
-        statsClient.setOnAction(event -> {
+        statsClient.setOnAction(_ -> {
             TransactionHistoryMenu transactionHistoryMenu = new TransactionHistoryMenu(primaryStage, scene, cardNumber);
             primaryStage.setScene(transactionHistoryMenu.getScene());
             sessionWarning.checkInactivity(); // Сбрасываем таймер
         });
 
-        clientCards.setOnAction(event -> {
+        clientCards.setOnAction(_ -> {
             ClientCardsMenu clientCardsMenu = new ClientCardsMenu(primaryStage, scene, cardNumber);
             primaryStage.setScene(clientCardsMenu.getScene());
             sessionWarning.checkInactivity(); // Сбрасываем таймер

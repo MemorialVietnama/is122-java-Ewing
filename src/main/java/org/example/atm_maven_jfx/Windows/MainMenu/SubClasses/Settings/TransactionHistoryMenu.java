@@ -1,7 +1,6 @@
 package org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -15,11 +14,10 @@ import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Functions.SessionWarning; // Импортируем SessionWarning
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.Interfaces.TransactionHistory;
 
-import java.sql.*;
 
 public class TransactionHistoryMenu implements TransactionHistory {
     private final Scene scene;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public TransactionHistoryMenu(Stage primaryStage, Scene previousScene, String cardNumber) {
         this.scene = createScene(primaryStage, previousScene, cardNumber);
@@ -62,7 +60,7 @@ public class TransactionHistoryMenu implements TransactionHistory {
 
         Button backButton = new Button("Назад");
         backButton.setStyle("-fx-text-fill: red; -fx-font-size: 20px; -fx-background-color: white; -fx-cursor: hand;");
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             primaryStage.setScene(previousScene);
             sessionWarning.checkInactivity(); // Сбрасываем таймер
         });

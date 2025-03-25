@@ -28,7 +28,7 @@ public class PinCode {
     private final Scene scene;
     private final Stage primaryStage;
     private final String cardNumber; // Номер карты для проверки пин-кода
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public PinCode(Stage primaryStage, Scene previousScene, String cardNumber) {
         this.primaryStage = primaryStage;
@@ -45,7 +45,7 @@ public class PinCode {
 
         Label pinLabel = createLabel("Введите пин-код", 62);
         PasswordField pinField = createPinField();
-        Button backButton = createButton(() -> primaryStage.setScene(previousScene), previousScene);
+        Button backButton = createButton(previousScene);
 
         // Label для отображения ошибок
         Label errorLabel = createLabel("", 24); // Инициализация Label для ошибок
@@ -77,7 +77,7 @@ public class PinCode {
         field.setPromptText("Введите пин-код");
         field.setPrefWidth(500);
         field.setMaxWidth(500);
-        field.textProperty().addListener((observable, oldValue, newValue) -> {
+        field.textProperty().addListener((_, oldValue, newValue) -> {
             if (newValue.length() > PIN_LENGTH) {
                 field.setText(oldValue); // Ограничиваем длину пин-кода
             }
@@ -101,12 +101,12 @@ public class PinCode {
         );
 
         // Сброс таймера при вводе текста
-        field.setOnKeyTyped(event -> sessionWarning.checkInactivity());
+        field.setOnKeyTyped(_ -> sessionWarning.checkInactivity());
 
         return field;
     }
 
-    private Button createButton(Runnable action, Scene previousScene) {
+    private Button createButton(Scene previousScene) {
         Button button = new Button("Назад");
         button.setStyle(
                 "-fx-font-size: " + 36 + "px;" +
@@ -126,7 +126,7 @@ public class PinCode {
         shadow.setOffsetX(3);
         shadow.setOffsetY(3);
         button.setEffect(shadow);
-        button.setOnAction(event -> {
+        button.setOnAction(_ -> {
             SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
             sessionWarning.stopInactivityCheck(); // Сбрасываем таймер при нажатии кнопки
         });
@@ -175,7 +175,7 @@ public class PinCode {
                     -fx-border-width: 2px;
                     -fx-cursor: hand;
                 """);
-        button.setOnMousePressed(event -> button.setStyle("""
+        button.setOnMousePressed(_ -> button.setStyle("""
                 -fx-font-family: 'Arial Black';
                 -fx-font-weight: bold;
                 -fx-text-fill: black;
@@ -189,7 +189,7 @@ public class PinCode {
                 -fx-cursor: hand;
                 """
         ));
-        button.setOnMouseReleased(event -> button.setStyle("""
+        button.setOnMouseReleased(_ -> button.setStyle("""
                 -fx-font-family: 'Arial Black';
                 -fx-font-weight: bold;
                 -fx-text-fill: white;
@@ -205,15 +205,15 @@ public class PinCode {
         ));
 
         if (key.equals("C")) {
-            button.setOnAction(event -> {
+            button.setOnAction(_ -> {
                 pinField.clear();
                 errorLabel.setVisible(false); // Скрываем сообщение об ошибке при очистке поля
                 sessionWarning.checkInactivity(); // Сбрасываем таймер
             });
         } else if (key.equals("->")) {
-            button.setOnAction(event -> handlePinSubmission(pinField.getText(), errorLabel));
+            button.setOnAction(_ -> handlePinSubmission(pinField.getText(), errorLabel));
         } else {
-            button.setOnAction(event -> {
+            button.setOnAction(_ -> {
                 if (sessionWarning != null) {
                     sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                 }
@@ -236,8 +236,8 @@ public class PinCode {
                 if (isValidPin) {
                     // Логирование успешного входа
                     logOperation(cardNumber, "Успешный вход в систему");
-                    MainMenu mainMenu = new MainMenu(primaryStage, scene, cardNumber);
-                    SceneTransition.changeSceneWithAnimation(primaryStage, mainMenu.getScene());;
+                    MainMenu mainMenu = new MainMenu(primaryStage, primaryStage.getScene(), cardNumber);
+                    SceneTransition.changeSceneWithAnimation(primaryStage, mainMenu.getScene());
                 } else {
                     // Логирование неудачного входа
                     logOperation(cardNumber, "Неверный пин-код");

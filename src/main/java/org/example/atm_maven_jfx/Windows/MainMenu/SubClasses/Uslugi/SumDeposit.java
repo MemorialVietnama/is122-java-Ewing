@@ -23,8 +23,6 @@ public class SumDeposit {
     private final String cardNumber;
     private final double balance;
     private final Scene previousScene;
-    private Scene uslugiLoaderScene;
-    private Runnable transactionHandler;
     private TextField amountField;
     private final SessionWarning sessionWarning; // Поле для SessionWarning
 
@@ -69,7 +67,7 @@ public class SumDeposit {
                     -fx-border-width: 2px;
                     -fx-background-color: white;
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             primaryStage.setScene(previousScene);
             sessionWarning.stopInactivityCheck(); // Сбрасываем таймер
         });
@@ -104,7 +102,7 @@ public class SumDeposit {
                     -fx-border-width: 2px;
                     -fx-background-color: white;
                 """);
-        confirmButton.setOnAction(event -> {
+        confirmButton.setOnAction(_ -> {
             String amountText = amountField.getText();
             if (amountText.isEmpty()) {
                 errorLabel.setText("Введите сумму!");
@@ -120,11 +118,6 @@ public class SumDeposit {
             if (amount > balance) {
                 errorLabel.setText("Недостаточно средств на счете!");
                 return;
-            }
-
-            // Вызов обработчика транзакции
-            if (transactionHandler != null) {
-                transactionHandler.run();
             }
 
             // Создаем экземпляр UslugiLoader и передаем необходимые данные
@@ -186,7 +179,7 @@ public class SumDeposit {
                 String key = keys[index];
 
                 // Handle button events
-                button.setOnMousePressed(event -> {
+                button.setOnMousePressed(_ -> {
                     if (sessionWarning != null) {
                         sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                     }
@@ -205,24 +198,22 @@ public class SumDeposit {
                             """);
                 });
 
-                button.setOnMouseReleased(event -> {
-                    button.setStyle("""
-                            -fx-font-family: 'Arial Black';
-                            -fx-font-weight: bold;
-                            -fx-text-fill: white;
-                            -fx-font-size: 28px;
-                            -fx-padding: 20px;
-                            -fx-min-width: 90px;
-                            -fx-min-height: 90px;
-                            -fx-background-color: red;
-                            -fx-border-color: white;
-                            -fx-border-width: 2px;
-                            -fx-cursor: hand;
-                            """);
-                });
+                button.setOnMouseReleased(_ -> button.setStyle("""
+                        -fx-font-family: 'Arial Black';
+                        -fx-font-weight: bold;
+                        -fx-text-fill: white;
+                        -fx-font-size: 28px;
+                        -fx-padding: 20px;
+                        -fx-min-width: 90px;
+                        -fx-min-height: 90px;
+                        -fx-background-color: red;
+                        -fx-border-color: white;
+                        -fx-border-width: 2px;
+                        -fx-cursor: hand;
+                        """));
 
                 if (key.equals("C")) {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         if (sessionWarning != null) {
                             sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                         }
@@ -232,7 +223,7 @@ public class SumDeposit {
                         }
                     });
                 } else {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         if (sessionWarning != null) {
                             sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                         }

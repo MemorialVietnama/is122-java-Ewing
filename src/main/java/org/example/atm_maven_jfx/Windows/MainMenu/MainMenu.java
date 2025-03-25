@@ -28,7 +28,7 @@ public class MainMenu {
     private final Scene scene;
     private final SessionWarning sessionWarning; // Поле для SessionWarning
 
-    public MainMenu(Stage primaryStage, Scene previousScene, String cardNumber) {
+    public MainMenu(Stage primaryStage, String cardNumber) {
         this.cardNumber = cardNumber;
         this.scene = createScene(primaryStage); // Создаем сцену сразу
 
@@ -159,7 +159,7 @@ public class MainMenu {
         uslugiButton.setContentDisplay(ContentDisplay.LEFT);
 
         // Обработчики событий для кнопок
-        windrawButton.setOnAction(event -> {
+        windrawButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -168,7 +168,7 @@ public class MainMenu {
             SceneTransition.changeSceneWithAnimation(primaryStage, newScene); // Используем анимацию
         });
 
-        depositButton.setOnAction(event -> {
+        depositButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -177,7 +177,7 @@ public class MainMenu {
             SceneTransition.changeSceneWithAnimation(primaryStage, newScene); // Используем анимацию
         });
 
-        uslugiButton.setOnAction(event -> {
+        uslugiButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -186,20 +186,17 @@ public class MainMenu {
             SceneTransition.changeSceneWithAnimation(primaryStage, newScene); // Используем анимацию
         });
 
-        nameCard.setOnAction(event -> {
+        nameCard.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
-            SettingsCardMenu settingsCardMenu = new SettingsCardMenu(primaryStage, scene, cardNumber, balance) {
-                public ClientInfo getClientInfo(String cardNumber) {
-                    return null;
-                }
+            SettingsCardMenu settingsCardMenu = new SettingsCardMenu(primaryStage, scene, cardNumber) {
             };
             Scene newScene = settingsCardMenu.getScene();
             SceneTransition.changeSceneWithAnimation(primaryStage, newScene); // Используем анимацию
         });
 
-        logOut.setOnAction(event -> {
+        logOut.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }

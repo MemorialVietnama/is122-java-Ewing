@@ -24,7 +24,7 @@ public class LoadMoney {
                     -fx-background-color: white;
                     -fx-cursor: hand;
                 """);
-        continueButton.setOnAction(event -> primaryStage.setScene(nextScene));
+        continueButton.setOnAction(_ -> primaryStage.setScene(nextScene));
 
         VBox layout = new VBox(20, instructionLabel, continueButton);
         layout.setAlignment(Pos.CENTER);

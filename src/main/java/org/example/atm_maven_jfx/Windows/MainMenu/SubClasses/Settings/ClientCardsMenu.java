@@ -19,7 +19,7 @@ import java.sql.ResultSet;
 
 public class ClientCardsMenu {
     private final Scene scene;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public ClientCardsMenu(Stage primaryStage, Scene previousScene, String cardNumber) {
         this.scene = createScene(primaryStage, previousScene, cardNumber);
@@ -46,25 +46,25 @@ public class ClientCardsMenu {
         // Колонка для номера карты
         TableColumn<CardInfo, String> numberCardColumn = new TableColumn<>("Номер карты");
         numberCardColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getNumberCard())
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().numberCard())
         );
 
         // Колонка для банка
         TableColumn<CardInfo, String> bankColumn = new TableColumn<>("Банк");
         bankColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getBank())
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().bank())
         );
 
         // Колонка для даты валидации
         TableColumn<CardInfo, String> validationColumn = new TableColumn<>("Действительна до");
         validationColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getValidation())
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().validation())
         );
 
         // Колонка для типа карты
         TableColumn<CardInfo, String> cardTypeColumn = new TableColumn<>("Тип карты");
         cardTypeColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCardType())
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().cardType())
         );
 
         // Добавляем колонки в таблицу
@@ -77,7 +77,7 @@ public class ClientCardsMenu {
 
         Button backButton = new Button("Назад");
         backButton.setStyle("-fx-text-fill: red; -fx-font-size: 20px; -fx-background-color: white; -fx-cursor: hand;");
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -125,34 +125,6 @@ public class ClientCardsMenu {
     }
 
     // Класс для хранения данных о карте
-    public static class CardInfo {
-        private final String numberCard;
-        private final String bank;
-        private final String validation;
-        private final String cardType;
-
-        public CardInfo(String numberCard, String bank, String validation, String cardType) {
-            this.numberCard = numberCard;
-            this.bank = bank;
-            this.validation = validation;
-            this.cardType = cardType;
-        }
-
-        // Геттеры для использования в TableView
-        public String getNumberCard() {
-            return numberCard;
-        }
-
-        public String getBank() {
-            return bank;
-        }
-
-        public String getValidation() {
-            return validation;
-        }
-
-        public String getCardType() {
-            return cardType;
-        }
+        public record CardInfo(String numberCard, String bank, String validation, String cardType) {
     }
 }

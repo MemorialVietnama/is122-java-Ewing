@@ -56,14 +56,14 @@ public class RemoveMoneyAction {
                     -fx-background-color: white;
                     -fx-cursor: hand;
                 """);
-        nextButton.setOnAction(event -> {
+        nextButton.setOnAction(_ -> {
             Scene loadingRemoveMoneyScene = LoadingRemoveMoney.createScene(primaryStage, returnScene, cashToRemove);
             primaryStage.setScene(loadingRemoveMoneyScene);
         });
 
         Button backButton = new Button("Назад");
         backButton.setStyle(nextButton.getStyle());
-        backButton.setOnAction(event -> primaryStage.setScene(returnScene));
+        backButton.setOnAction(_ -> primaryStage.setScene(returnScene));
 
         tableView.setPrefWidth(800);
         tableView.setMaxWidth(800);

@@ -6,7 +6,5 @@ import javafx.stage.Stage;
 public interface ChangePINCheckInterface {
     Scene getScene();
 
-    void logOperation(String cardNumber, String comment);
-
     Scene createScene(Stage primaryStage, Scene previousScene);
 }

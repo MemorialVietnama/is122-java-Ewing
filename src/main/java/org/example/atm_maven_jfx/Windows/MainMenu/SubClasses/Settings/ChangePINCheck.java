@@ -40,7 +40,7 @@ public abstract class ChangePINCheck implements ChangePINCheckInterface {
 
         Button backButton = new Button("Назад");
         backButton.setStyle("-fx-text-fill: red; -fx-font-size: 20px; -fx-background-color: white; -fx-cursor: hand;");
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }

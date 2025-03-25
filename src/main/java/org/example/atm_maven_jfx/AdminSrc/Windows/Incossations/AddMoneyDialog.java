@@ -54,16 +54,16 @@ public class AddMoneyDialog {
             }
         };
 
-        countField50.textProperty().addListener((obs, old, newVal) -> updateTotal.run());
-        countField100.textProperty().addListener((obs, old, newVal) -> updateTotal.run());
-        countField500.textProperty().addListener((obs, old, newVal) -> updateTotal.run());
-        countField1000.textProperty().addListener((obs, old, newVal) -> updateTotal.run());
-        countField2000.textProperty().addListener((obs, old, newVal) -> updateTotal.run());
-        countField5000.textProperty().addListener((obs, old, newVal) -> updateTotal.run());
+        countField50.textProperty().addListener((_, _, _) -> updateTotal.run());
+        countField100.textProperty().addListener((_, _, _) -> updateTotal.run());
+        countField500.textProperty().addListener((_, _, _) -> updateTotal.run());
+        countField1000.textProperty().addListener((_, _, _) -> updateTotal.run());
+        countField2000.textProperty().addListener((_, _, _) -> updateTotal.run());
+        countField5000.textProperty().addListener((_, _, _) -> updateTotal.run());
 
         Button autoButton = new Button("Авто");
         autoButton.setStyle("-fx-font-size: 14px; -fx-padding: 8px 16px; -fx-background-color: #2196f3; -fx-text-fill: white; -fx-border-radius: 5px;");
-        autoButton.setOnAction(e -> {
+        autoButton.setOnAction(_ -> {
             countField50.setText("10");
             countField100.setText("10");
             countField500.setText("10");
@@ -75,7 +75,7 @@ public class AddMoneyDialog {
 
         Button okButton = new Button("ОК");
         okButton.setStyle("-fx-font-size: 14px; -fx-padding: 8px 16px; -fx-background-color: #4caf50; -fx-text-fill: white; -fx-border-radius: 5px;");
-        okButton.setOnAction(e -> {
+        okButton.setOnAction(_ -> {
             try {
                 int count50 = Integer.parseInt(countField50.getText());
                 int count100 = Integer.parseInt(countField100.getText());

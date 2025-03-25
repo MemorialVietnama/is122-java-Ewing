@@ -74,20 +74,20 @@ public class ServiceManagement {
 
         // Кнопки
         Button addButton = new Button("Добавить");
-        addButton.setOnAction(event -> addService(tableView));
+        addButton.setOnAction(_ -> addService(tableView));
 
         Button deleteButton = new Button("Удалить");
-        deleteButton.setOnAction(event -> deleteSelectedServices(tableView));
+        deleteButton.setOnAction(_ -> deleteSelectedServices(tableView));
 
         Button saveButton = new Button("Сохранить Конфигурацию");
-        saveButton.setOnAction(event -> saveConfiguration());
+        saveButton.setOnAction(_ -> saveConfiguration());
 
         HBox buttonBox = new HBox(10, addButton, deleteButton, saveButton);
         buttonBox.setAlignment(Pos.CENTER);
 
         // Кнопка "Назад"
         Button backButton = new Button("Назад");
-        backButton.setOnAction(event -> primaryStage.setScene(previousScene));
+        backButton.setOnAction(_ -> primaryStage.setScene(previousScene));
 
         // Загрузка данных из БД
         loadServicesFromDatabase(tableView);
@@ -96,7 +96,7 @@ public class ServiceManagement {
         return new Scene(root, 800, 600);
     }
 
-    private void loadServicesFromDatabase(TableView<Service> tableView) {
+    public void loadServicesFromDatabase(TableView<Service> tableView) {
         try {
             List<Service> loadedServices = DatabaseService.loadServices();
             services.clear();
@@ -116,7 +116,7 @@ public class ServiceManagement {
         }
     }
 
-    private void addService(TableView<Service> tableView) {
+    public void addService(TableView<Service> tableView) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Добавить Услугу");
         dialog.setHeaderText("Введите название новой услуги:");
@@ -148,7 +148,7 @@ public class ServiceManagement {
         });
     }
 
-    private void deleteSelectedServices(TableView<Service> tableView) {
+    public void deleteSelectedServices(TableView<Service> tableView) {
         ObservableList<Service> selectedServices = FXCollections.observableArrayList();
         for (Service service : services) {
             if (service.isSelected()) { // Используем метод isSelected()
@@ -182,7 +182,7 @@ public class ServiceManagement {
         }
     }
 
-    private void saveConfiguration() {
+    public void saveConfiguration() {
         System.out.println("Сохранение конфигурации...");
         for (Service service : services) {
             try {

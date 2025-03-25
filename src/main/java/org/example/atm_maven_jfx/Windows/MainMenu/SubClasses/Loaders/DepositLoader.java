@@ -20,13 +20,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 public class DepositLoader implements DepositLoaderInterface {
     private final Scene scene;
     private final Stage primaryStage;
 
-    public DepositLoader(Stage primaryStage, Scene mainMenuScene, String cardNumber, int depositAmount, List<DepositOperation.Denomination> banknotes) {
+    public DepositLoader(Stage primaryStage, String cardNumber, int depositAmount, List<DepositOperation.Denomination> banknotes) {
         this.primaryStage = primaryStage;
-        this.scene = createScene(cardNumber, depositAmount);
+        this.scene = createScene();
 
         // Обновляем баланс через DatabaseService
         boolean isBalanceUpdated = DatabaseService.updateBalance(cardNumber, depositAmount);
@@ -47,7 +49,7 @@ public class DepositLoader implements DepositLoaderInterface {
         scheduleSceneChange(cardNumber);
     }
 
-    private Scene createScene(String cardNumber, int depositAmount) {
+    private Scene createScene() {
         StackPane root = new StackPane();
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: red; -fx-padding: 40px;");
@@ -69,9 +71,9 @@ public class DepositLoader implements DepositLoaderInterface {
 
     private void createTextAnimation(Text message, List<String> messages) {
         Timeline timeline = new Timeline();
-        KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(0), event -> animateText(message, getRandomMessage(messages), true));
-        KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(2), event -> animateText(message, getRandomMessage(messages), false));
-        KeyFrame keyFrame3 = new KeyFrame(Duration.seconds(4), event -> {});
+        KeyFrame keyFrame1 = new KeyFrame(Duration.seconds(0), _ -> animateText(message, getRandomMessage(messages), true));
+        KeyFrame keyFrame2 = new KeyFrame(Duration.seconds(2), _ -> animateText(message, getRandomMessage(messages), false));
+        KeyFrame keyFrame3 = new KeyFrame(Duration.seconds(4), _ -> {});
         timeline.getKeyFrames().addAll(keyFrame1, keyFrame2, keyFrame3);
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -97,7 +99,7 @@ public class DepositLoader implements DepositLoaderInterface {
                 for (int i = currentText.length(); i >= 0; i--) {
                     final int index = i;
                     try {
-                        Thread.sleep(100);
+                        sleep(100);
                         Platform.runLater(() -> message.setText(currentText.substring(0, index)));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -118,14 +120,12 @@ public class DepositLoader implements DepositLoaderInterface {
 
     public void scheduleSceneChange(String cardNumber) {
         Timeline timeline = new Timeline();
-        KeyFrame keyFrame = new KeyFrame(Duration.seconds(3), event -> {
-            Platform.runLater(() -> {
-                Scene previousScene = new Scene(new StackPane(), 1920, 1080);
-                MainMenu mainMenu = new MainMenu(primaryStage, previousScene, cardNumber);
-                primaryStage.setScene(mainMenu.getScene());
-                primaryStage.show();
-            });
-        });
+        KeyFrame keyFrame = new KeyFrame(Duration.seconds(3), _ -> Platform.runLater(() -> {
+            new Scene(new StackPane(), 1920, 1080);
+            MainMenu mainMenu = new MainMenu(primaryStage, cardNumber);
+            primaryStage.setScene(mainMenu.getScene());
+            primaryStage.show();
+        }));
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
     }

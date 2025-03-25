@@ -7,8 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations;
-import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.RemoveMoneyAction;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 import java.sql.SQLException;
 import java.util.Map;
@@ -53,7 +51,7 @@ public class RemoveMoneyDialog {
                 -fx-border-radius: 5px;
                 -fx-cursor: hand;
                 """);
-        okButton.setOnAction(e -> {
+        okButton.setOnAction(_ -> {
             try {
                 int amountToRemove = Integer.parseInt(amountField.getText());
                 if (amountToRemove <= 0) {

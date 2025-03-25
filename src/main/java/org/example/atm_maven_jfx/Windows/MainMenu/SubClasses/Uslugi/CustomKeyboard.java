@@ -27,17 +27,17 @@ public class CustomKeyboard implements CustomKeyboardInterfaces {
         updateLetterKeyboard(grid);
 
         Button switchButton = createButton("Сменить Язык");
-        switchButton.setOnAction(event -> {
+        switchButton.setOnAction(_ -> {
             isRussian = !isRussian;
             updateLetterKeyboard(grid);
         });
 
         Button spaceButton = createButton(" ");
         spaceButton.setMinWidth(600);
-        spaceButton.setOnAction(event -> textField.appendText(" "));
+        spaceButton.setOnAction(_ -> textField.appendText(" "));
 
         Button clearInput = createButton("Стереть");
-        clearInput.setOnAction(event -> textField.setText(""));
+        clearInput.setOnAction(_ -> textField.setText(""));
 
         HBox controlBox = new HBox(10);
         controlBox.setAlignment(Pos.CENTER);
@@ -73,44 +73,40 @@ public class CustomKeyboard implements CustomKeyboardInterfaces {
                 -fx-cursor: hand;
                 """);
 
-        button.setOnMousePressed(event -> {
-            button.setStyle("""
-                    -fx-font-family: 'Arial Black';
-                    -fx-font-weight: bold;
-                    -fx-text-fill: black;
-                    -fx-font-size: 20px;
-                    -fx-padding: 10px;
-                    -fx-min-width: 70px;
-                    -fx-min-height: 70px;
-                    -fx-background-color: white;
-                    -fx-border-color: white;
-                    -fx-border-width: 2px;
-                    -fx-cursor: hand;
-                    """);
-        });
+        button.setOnMousePressed(_ -> button.setStyle("""
+                -fx-font-family: 'Arial Black';
+                -fx-font-weight: bold;
+                -fx-text-fill: black;
+                -fx-font-size: 20px;
+                -fx-padding: 10px;
+                -fx-min-width: 70px;
+                -fx-min-height: 70px;
+                -fx-background-color: white;
+                -fx-border-color: white;
+                -fx-border-width: 2px;
+                -fx-cursor: hand;
+                """));
 
-        button.setOnMouseReleased(event -> {
-            button.setStyle("""
-                    -fx-font-family: 'Arial Black';
-                    -fx-font-weight: bold;
-                    -fx-text-fill: white;
-                    -fx-font-size: 20px;
-                    -fx-padding: 10px;
-                    -fx-min-width: 70px;
-                    -fx-min-height: 70px;
-                    -fx-background-color: red;
-                    -fx-border-color: white;
-                    -fx-border-width: 2px;
-                    -fx-cursor: hand;
-                    """);
-        });
+        button.setOnMouseReleased(_ -> button.setStyle("""
+                -fx-font-family: 'Arial Black';
+                -fx-font-weight: bold;
+                -fx-text-fill: white;
+                -fx-font-size: 20px;
+                -fx-padding: 10px;
+                -fx-min-width: 70px;
+                -fx-min-height: 70px;
+                -fx-background-color: red;
+                -fx-border-color: white;
+                -fx-border-width: 2px;
+                -fx-cursor: hand;
+                """));
 
         return button;
     }
 
     private void addKeyButton(GridPane grid, String key, int row, int col) {
         Button button = createButton(key);
-        button.setOnAction(event -> textField.appendText(button.getText()));
+        button.setOnAction(_ -> textField.appendText(button.getText()));
         grid.add(button, col, row);
     }
 

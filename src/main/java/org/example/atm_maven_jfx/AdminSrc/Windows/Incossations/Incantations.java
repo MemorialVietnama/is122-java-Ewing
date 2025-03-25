@@ -45,7 +45,7 @@ public class Incantations {
                     -fx-background-color: white;
                     -fx-cursor: hand;
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             System.out.println("Switching back to the previous scene...");
             if (previousScene != null) {
                 primaryStage.setScene(previousScene); // Переключаемся на предыдущую сцену
@@ -105,7 +105,7 @@ public class Incantations {
 
         Button refreshSumButton = new Button("Обновить сумму");
         refreshSumButton.setStyle(backButton.getStyle());
-        refreshSumButton.setOnAction(event -> {
+        refreshSumButton.setOnAction(_ -> {
             try {
                 int totalAmount = DatabaseService.calculateTotalAmount();
                 DatabaseService.updateCurrentAmount(totalAmount, "123456"); // Замените на реальный ID банкомата
@@ -141,14 +141,14 @@ public class Incantations {
         vbox.setSpacing(10);
         vbox.setStyle("-fx-background-color: red;");
 
-        addMoney.setOnAction(event -> {
+        addMoney.setOnAction(_ -> {
             boolean isDataAdded = AddMoneyDialog.display(tableView);
             if (isDataAdded) {
                 loadCashStorageData(tableView);
             }
         });
 
-        removeMoney.setOnAction(event -> {
+        removeMoney.setOnAction(_ -> {
             boolean isDataRemoved = RemoveMoneyDialog.display(tableView);
             if (isDataRemoved) {
                 loadCashStorageData(tableView);

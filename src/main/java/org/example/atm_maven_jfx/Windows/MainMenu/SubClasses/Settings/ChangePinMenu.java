@@ -21,15 +21,12 @@ import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.Interfaces
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import static org.example.atm_maven_jfx.Database.DatabaseService.getConnection;
 
 public class ChangePinMenu implements ChangePinMenuInterface {
     private final Scene scene;
     private TextField activeField;
     private Label errorLabel;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public ChangePinMenu(Stage primaryStage, Scene previousScene, String cardNumber) {
         this.scene = createScene(primaryStage, previousScene, cardNumber);
@@ -89,15 +86,15 @@ public class ChangePinMenu implements ChangePinMenuInterface {
             return null;
         }));
 
-        oldPinField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+        oldPinField.focusedProperty().addListener((_, _, newVal) -> {
             if (newVal) activeField = oldPinField;
             sessionWarning.checkInactivity(); // Сбрасываем таймер
         });
-        newPinField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+        newPinField.focusedProperty().addListener((_, _, newVal) -> {
             if (newVal) activeField = newPinField;
             sessionWarning.checkInactivity(); // Сбрасываем таймер
         });
-        confirmPinField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+        confirmPinField.focusedProperty().addListener((_, _, newVal) -> {
             if (newVal) activeField = confirmPinField;
             sessionWarning.checkInactivity(); // Сбрасываем таймер
         });
@@ -106,7 +103,7 @@ public class ChangePinMenu implements ChangePinMenuInterface {
 
         Button changePinButton = new Button("Сменить PIN");
         changePinButton.setStyle("-fx-text-fill: red; -fx-font-size: 24px; -fx-background-color: white; -fx-cursor: hand;");
-        changePinButton.setOnAction(event -> {
+        changePinButton.setOnAction(_ -> {
             String oldPin = oldPinField.getText();
             String newPin = newPinField.getText();
             String confirmPin = confirmPinField.getText();
@@ -123,20 +120,6 @@ public class ChangePinMenu implements ChangePinMenuInterface {
 
             if (updatePinInDatabase(cardNumber, oldPin, newPin)) {
                 ChangePINCheck changePINCheck = new ChangePINCheck(primaryStage, previousScene, cardNumber) {
-                    @Override
-                    public void logOperation(String cardNumber, String comment) {
-                        String query = "INSERT INTO CLIENT_OPERATION (CARD_NUM, DDATE_STAMP, OPERATION, COMMENT) VALUES (?, CURRENT_TIMESTAMP, ?, ?)";
-                        try (Connection conn = getConnection();
-                             PreparedStatement stmt = conn.prepareStatement(query)) {
-                            stmt.setString(1, cardNumber);
-                            String operation = "Смена PIN";
-                            stmt.setString(2, operation);
-                            stmt.setString(3, comment);
-                            stmt.executeUpdate();
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
                 };
                 primaryStage.setScene(changePINCheck.getScene());
             } else {
@@ -147,7 +130,7 @@ public class ChangePinMenu implements ChangePinMenuInterface {
 
         Button backButton = new Button("Назад");
         backButton.setStyle("-fx-text-fill: red; -fx-font-size: 24px; -fx-background-color: white; -fx-cursor: hand;");
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -173,11 +156,11 @@ public class ChangePinMenu implements ChangePinMenuInterface {
         errorLabel.setText(errorMessage);
         errorLabel.setVisible(true);
 
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), _ -> {
             FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), errorLabel);
             fadeTransition.setFromValue(1.0);
             fadeTransition.setToValue(0.0);
-            fadeTransition.setOnFinished(e -> errorLabel.setVisible(false));
+            fadeTransition.setOnFinished(_ -> errorLabel.setVisible(false));
             fadeTransition.play();
         }));
         timeline.setCycleCount(1);
@@ -201,10 +184,10 @@ public class ChangePinMenu implements ChangePinMenuInterface {
         for (int i = 0; i < buttons.length; i++) {
             Button button = new Button(buttons[i]);
             button.setStyle("-fx-font-family: 'Arial Black'; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 26px; -fx-padding: 20px; -fx-min-width: 90px; -fx-min-height: 90px; -fx-background-color: red; -fx-border-color: white; -fx-border-width: 2px; -fx-cursor: hand;");
-            button.setOnMousePressed(event -> button.setStyle("-fx-font-family: 'Arial Black'; -fx-font-weight: bold; -fx-text-fill: black; -fx-font-size: 26px; -fx-padding: 20px; -fx-min-width: 90px; -fx-min-height: 90px; -fx-background-color: white; -fx-border-color: white; -fx-border-width: 2px; -fx-cursor: hand;"));
-            button.setOnMouseReleased(event -> button.setStyle("-fx-font-family: 'Arial Black'; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 26px; -fx-padding: 20px; -fx-min-width: 90px; -fx-min-height: 90px; -fx-background-color: red; -fx-border-color: white; -fx-border-width: 2px; -fx-cursor: hand;"));
+            button.setOnMousePressed(_ -> button.setStyle("-fx-font-family: 'Arial Black'; -fx-font-weight: bold; -fx-text-fill: black; -fx-font-size: 26px; -fx-padding: 20px; -fx-min-width: 90px; -fx-min-height: 90px; -fx-background-color: white; -fx-border-color: white; -fx-border-width: 2px; -fx-cursor: hand;"));
+            button.setOnMouseReleased(_ -> button.setStyle("-fx-font-family: 'Arial Black'; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 26px; -fx-padding: 20px; -fx-min-width: 90px; -fx-min-height: 90px; -fx-background-color: red; -fx-border-color: white; -fx-border-width: 2px; -fx-cursor: hand;"));
 
-            button.setOnAction(event -> {
+            button.setOnAction(_ -> {
                 if (activeField != null) {
                     String buttonText = button.getText();
                     if (buttonText.equals("←")) {

@@ -5,7 +5,4 @@ import javafx.scene.Scene;
 public interface ServiceLoader {
     Scene getScene();
 
-    boolean logTransaction();
-
-    boolean updateBalance();
 }

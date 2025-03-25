@@ -11,14 +11,13 @@ import org.example.atm_maven_jfx.Windows.BlockMenu.Classes.ButtonPanel;
 import org.example.atm_maven_jfx.Windows.BlockMenu.Classes.CardImageView;
 import org.example.atm_maven_jfx.Windows.BlockMenu.Classes.InstructionLabels;
 import org.example.atm_maven_jfx.Windows.BlockMenu.Classes.WelcomeLabel;
-import org.example.atm_maven_jfx.Windows.BlockMenu.Interface.ButtonActionHandler;
 import org.example.atm_maven_jfx.Windows.BlockMenu.Interface.SceneManager;
 import org.example.atm_maven_jfx.Windows.BlockMenu.Interface.StyleConfigurator;
 
 public class BlockWindowScene implements SceneManager {
     private final StyleConfigurator styleConfigurator;
 
-    public BlockWindowScene(ButtonActionHandler buttonActionHandler, StyleConfigurator styleConfigurator) {
+    public BlockWindowScene(StyleConfigurator styleConfigurator) {
         this.styleConfigurator = styleConfigurator;
     }
 
@@ -48,7 +47,7 @@ public class BlockWindowScene implements SceneManager {
                 buttonBox.getChildren().forEach(button -> {
                     if (button instanceof Button) {
                         styleConfigurator.configureButtonStyle((Button) button);
-                        ((Button) button).setEffect(styleConfigurator.createDropShadowEffect());
+                        button.setEffect(styleConfigurator.createDropShadowEffect());
                     }
                 });
 

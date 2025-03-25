@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Windows.AuthKeypadCard.AuthWithNumberCard;
 
+import java.util.Objects;
+
 public class ButtonPanel {
     public HBox getView(Stage primaryStage) {
         DropShadow shadow = new DropShadow();
@@ -31,14 +33,14 @@ public class ButtonPanel {
 
         // Создание кнопки "Войти по номеру карты" с изображением
         Button button1 = new Button("Войти по номеру карты");
-        Image keyboardImage = new Image(getClass().getResourceAsStream("/org/example/atm_maven_jfx/Assets/keyboard.png"));
+        Image keyboardImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/example/atm_maven_jfx/Assets/keyboard.png")));
         ImageView keyboardImageView = new ImageView(keyboardImage);
         keyboardImageView.setFitWidth(50); // Установка ширины изображения
         keyboardImageView.setFitHeight(50); // Установка высоты изображения
         button1.setGraphic(keyboardImageView); // Добавление изображения на кнопку
         button1.setStyle(defaultStyle);
         button1.setEffect(shadow);
-        button1.setOnAction(event -> {
+        button1.setOnAction(_ -> {
             System.out.println("Кнопка 'Войти по номеру карты' нажата!");
             AuthWithNumberCard authWithNumberCard = new AuthWithNumberCard(primaryStage, primaryStage.getScene());
             primaryStage.setScene(authWithNumberCard.getScene());
@@ -46,16 +48,14 @@ public class ButtonPanel {
 
         // Создание кнопки "Войти по биометрии" с изображением
         Button button3 = new Button("Войти по биометрии");
-        Image bioImage = new Image(getClass().getResourceAsStream("/org/example/atm_maven_jfx/Assets/bio.png"));
+        Image bioImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/example/atm_maven_jfx/Assets/bio.png")));
         ImageView bioImageView = new ImageView(bioImage);
         bioImageView.setFitWidth(50); // Установка ширины изображения
         bioImageView.setFitHeight(50); // Установка высоты изображения
         button3.setGraphic(bioImageView); // Добавление изображения на кнопку
         button3.setStyle(defaultStyle);
         button3.setEffect(shadow);
-        button3.setOnAction(event -> {
-            System.out.println("Кнопка 'Войти по биометрии' нажата!");
-        });
+        button3.setOnAction(_ -> System.out.println("Кнопка 'Войти по биометрии' нажата!"));
 
         // Создание контейнера HBox для кнопок
         HBox buttonBox = new HBox(10, button1, button3);

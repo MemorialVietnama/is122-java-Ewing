@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -27,7 +26,7 @@ public class DepositOperation implements DepositOperationInterface {
     private TableView<Denomination> table;
     private Label totalAmountLabel;
     private int totalAmount = 0;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public DepositOperation(Stage primaryStage, Scene previousScene, String cardNumber, int amount) {
         this.scene = createScene(primaryStage, previousScene, cardNumber, amount);
@@ -69,16 +68,16 @@ public class DepositOperation implements DepositOperationInterface {
 
         TableColumn<Denomination, String> demonitionCol = new TableColumn<>("ДЕНОМИНАЦИЯ");
         demonitionCol.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getDemonition())
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().demonition())
         );
 
         TableColumn<Denomination, String> seriasCol = new TableColumn<>("СЕРИЯ");
         seriasCol.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getSerias())
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().serias())
         );
 
         TableColumn<Denomination, Void> actionsCol = new TableColumn<>("ДЕЙСТВИЯ");
-        actionsCol.setCellFactory(param -> new TableCell<>() {
+        actionsCol.setCellFactory(_ -> new TableCell<>() {
             private final Button deleteButton = new Button("Удалить");
 
             {
@@ -93,10 +92,10 @@ public class DepositOperation implements DepositOperationInterface {
                             -fx-border-width: 2px;
                             -fx-cursor: hand;
                         """);
-                deleteButton.setOnAction(event -> {
+                deleteButton.setOnAction(_ -> {
                     Denomination rowData = getTableView().getItems().get(getIndex());
                     table.getItems().remove(rowData);
-                    totalAmount -= Integer.parseInt(rowData.getDemonition().replace(" руб.", ""));
+                    totalAmount -= Integer.parseInt(rowData.demonition().replace(" руб.", ""));
                     totalAmountLabel.setText("Введенная сумма: " + totalAmount + " руб.");
                     banknotes.remove(rowData);
                     sessionWarning.checkInactivity(); // Сбрасываем таймер
@@ -142,7 +141,7 @@ public class DepositOperation implements DepositOperationInterface {
                         -fx-cursor: hand;
                     """);
             int denomination = denominations[i];
-            button.setOnAction(event -> {
+            button.setOnAction(_ -> {
                 if (totalAmount + denomination <= MAX_DEPOSIT) {
                     String serias = generateRandomSerias();
                     Denomination newBanknote = new Denomination(denomination + " руб.", serias);
@@ -172,11 +171,11 @@ public class DepositOperation implements DepositOperationInterface {
                     -fx-cursor: hand;
                 """);
         nextButton.setEffect(shadow);
-        nextButton.setOnAction(event -> {
+        nextButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
-            DepositLoader depositLoader = new DepositLoader(primaryStage, scene, cardNumber, totalAmount, banknotes);
+            DepositLoader depositLoader = new DepositLoader(primaryStage, cardNumber, totalAmount, banknotes);
             primaryStage.setScene(depositLoader.getScene());
         });
 
@@ -192,7 +191,7 @@ public class DepositOperation implements DepositOperationInterface {
                     -fx-cursor: hand;
                     -fx-font-family: 'Arial Black';
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -218,21 +217,6 @@ public class DepositOperation implements DepositOperationInterface {
         return scene;
     }
 
-    public static class Denomination {
-        private final String demonition;
-        private final String serias;
-
-        public Denomination(String demonition, String serias) {
-            this.demonition = demonition;
-            this.serias = serias;
-        }
-
-        public String getDemonition() {
-            return demonition;
-        }
-
-        public String getSerias() {
-            return serias;
-        }
+    public record Denomination(String demonition, String serias) {
     }
 }

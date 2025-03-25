@@ -20,7 +20,6 @@ import org.example.atm_maven_jfx.Functions.SessionWarning; // Импортиру
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Uslugi.Interfaces.ServiceMenu;
 
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +27,7 @@ import static javafx.geometry.Pos.CENTER;
 
 public class UslugiMenu implements ServiceMenu {
     private final Scene scene;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public UslugiMenu(Stage primaryStage, Scene previousScene, String cardNumber, double balance) {
         this.scene = createScene(primaryStage, previousScene, cardNumber, balance);
@@ -66,7 +65,7 @@ public class UslugiMenu implements ServiceMenu {
             -fx-border-width: 2px;
             -fx-background-color: white;
         """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -100,7 +99,7 @@ public class UslugiMenu implements ServiceMenu {
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.3), gridPane);
             fadeOut.setFromValue(1.0); // Начальная прозрачность
             fadeOut.setToValue(0.0);   // Конечная прозрачность
-            fadeOut.setOnFinished(event -> {
+            fadeOut.setOnFinished(_ -> {
                 // После завершения исчезновения обновляем кнопки
                 gridPane.getChildren().clear(); // Очищаем предыдущие кнопки
 
@@ -124,7 +123,7 @@ public class UslugiMenu implements ServiceMenu {
                     serviceButton.setEffect(shadow);
                     serviceButton.setWrapText(true);
                     int finalI = i;
-                    serviceButton.setOnAction(clickEvent -> {
+                    serviceButton.setOnAction(_ -> {
                         if (sessionWarning != null) {
                             sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                         }
@@ -134,11 +133,8 @@ public class UslugiMenu implements ServiceMenu {
                                 balance,
                                 previousScene,
                                 finalServiceNames.get(finalI),
-                                "Введите сумму",
                                 "Введите номер счета",
-                                () -> {
-                                    System.out.println("Выбрана услуга: " + finalServiceNames.get(finalI));
-                                }
+                                () -> System.out.println("Выбрана услуга: " + finalServiceNames.get(finalI))
                         );
                         primaryStage.setScene(form.getScene());
                     });
@@ -171,7 +167,7 @@ public class UslugiMenu implements ServiceMenu {
         prevButton.setEffect(shadow);
         nextButton.setEffect(shadow);
 
-        prevButton.setOnAction(event -> {
+        prevButton.setOnAction(_ -> {
             if (currentPage[0] > 1) {
                 currentPage[0]--;
                 pageLabel.setText("Страница " + currentPage[0] + " из " + totalPages);
@@ -180,7 +176,7 @@ public class UslugiMenu implements ServiceMenu {
             }
         });
 
-        nextButton.setOnAction(event -> {
+        nextButton.setOnAction(_ -> {
             if (currentPage[0] < totalPages) {
                 currentPage[0]++;
                 pageLabel.setText("Страница " + currentPage[0] + " из " + totalPages);

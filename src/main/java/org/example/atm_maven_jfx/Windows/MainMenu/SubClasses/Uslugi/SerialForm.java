@@ -24,7 +24,7 @@ public class SerialForm implements SerialFormInterface {
     private final Runnable transactionHandler;
     private final SessionWarning sessionWarning; // Поле для SessionWarning
 
-    public SerialForm(Stage primaryStage, String cardNumber, double balance, Scene previousScene, String title, String amountLabelText, String accountLabelText, Runnable transactionHandler) {
+    public SerialForm(Stage primaryStage, String cardNumber, double balance, Scene previousScene, String title, String accountLabelText, Runnable transactionHandler) {
         this.title = title;
         this.accountLabelText = accountLabelText;
         this.transactionHandler = transactionHandler;
@@ -63,7 +63,7 @@ public class SerialForm implements SerialFormInterface {
                     -fx-border-width: 2px;
                     -fx-background-color: white;
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
@@ -84,7 +84,7 @@ public class SerialForm implements SerialFormInterface {
             return change; //
         }));
 
-        accountField.textProperty().addListener((observable, oldValue, newValue) -> {
+        accountField.textProperty().addListener((_, _, newValue) -> {
             String sanitizedValue = sanitizeInput(newValue);
             if (!newValue.equals(sanitizedValue)) {
                 accountField.setText(sanitizedValue);
@@ -115,7 +115,7 @@ public class SerialForm implements SerialFormInterface {
                     -fx-border-width: 2px;
                     -fx-background-color: white;
                 """);
-        confirmButton.setOnAction(event -> {
+        confirmButton.setOnAction(_ -> {
             String accountText = accountField.getText();
 
             // Валидация данных

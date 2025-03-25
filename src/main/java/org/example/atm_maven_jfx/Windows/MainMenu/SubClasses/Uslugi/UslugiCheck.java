@@ -12,10 +12,10 @@ import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Uslugi.Interfaces.S
 
 public class UslugiCheck implements ServiceCheck {
     private final Scene scene;
-    private SessionWarning sessionWarning; // Поле для SessionWarning
+    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
-    public UslugiCheck(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName, Scene previousScene) {
-        this.scene = createScene(primaryStage, cardNumber, amount, accountNumber, serviceName, previousScene);
+    public UslugiCheck(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName) {
+        this.scene = createScene(primaryStage, cardNumber, amount, accountNumber, serviceName);
 
         // Создаем объект SessionWarning
         sessionWarning = new SessionWarning(primaryStage);
@@ -24,7 +24,7 @@ public class UslugiCheck implements ServiceCheck {
         sessionWarning.checkInactivity();
     }
 
-    private Scene createScene(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName, Scene previousScene) {
+    private Scene createScene(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName) {
         VBox root = new VBox(10);
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: green;");
@@ -53,11 +53,11 @@ public class UslugiCheck implements ServiceCheck {
                     -fx-border-width: 2px;
                     -fx-background-color: white;
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             if (sessionWarning != null) {
                 sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
             }
-            MainMenu mainMenu = new MainMenu(primaryStage, previousScene, cardNumber);
+            MainMenu mainMenu = new MainMenu(primaryStage, cardNumber);
             primaryStage.setScene(mainMenu.getScene());
             primaryStage.show();
         });

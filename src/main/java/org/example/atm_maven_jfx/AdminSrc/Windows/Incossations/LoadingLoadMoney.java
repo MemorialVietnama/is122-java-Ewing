@@ -30,18 +30,14 @@ public class LoadingLoadMoney {
         for (String phrase : phrases) {
             for (int i = 0; i <= phrase.length(); i++) {
                 int finalI = i;
-                timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), e -> {
-                    animatedLabel.setText(phrase.substring(0, finalI));
-                }));
+                timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), _ -> animatedLabel.setText(phrase.substring(0, finalI))));
                 delay += 100;
             }
             delay += 1000;
         }
 
         // Выполнение операции с базой и возврат на предыдущую сцену
-        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), e -> {
-            primaryStage.setScene(returnScene);
-        }));
+        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), _ -> primaryStage.setScene(returnScene)));
 
         timeline.setCycleCount(1);
         timeline.play();

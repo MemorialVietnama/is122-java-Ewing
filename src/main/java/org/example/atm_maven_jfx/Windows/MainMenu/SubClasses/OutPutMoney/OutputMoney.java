@@ -18,7 +18,7 @@ public class OutputMoney {
     private final double balance;
     private TextField amountField;
     private Label errorLabel;
-    private SessionWarning sessionWarning;
+    private final SessionWarning sessionWarning;
 
     public OutputMoney(Stage primaryStage, Scene previousScene, String cardNumber, double balance) {
         this.balance = balance;
@@ -65,7 +65,7 @@ public class OutputMoney {
         amountField.setEditable(true);
 
         // Сброс таймера при вводе текста
-        amountField.setOnKeyTyped(event -> sessionWarning.checkInactivity());
+        amountField.setOnKeyTyped(_ -> sessionWarning.checkInactivity());
 
         errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: yellow; -fx-font-size: 20px;");
@@ -83,7 +83,7 @@ public class OutputMoney {
                     -fx-background-color: white;
                     -fx-cursor: hand;
                 """);
-        backButton.setOnAction(event -> {
+        backButton.setOnAction(_ -> {
             sessionWarning.checkInactivity(); // Сбрасываем таймер
             SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
         });
@@ -126,40 +126,36 @@ public class OutputMoney {
                         """);
                 String key = keys[index];
 
-                button.setOnMousePressed(event -> {
-                    button.setStyle("""
-                            -fx-font-family: 'Arial Black';
-                            -fx-font-weight: bold;
-                            -fx-text-fill: black;
-                            -fx-font-size: 28px;
-                            -fx-padding: 20px;
-                            -fx-min-width: 90px;
-                            -fx-min-height: 90px;
-                            -fx-background-color: white;
-                            -fx-border-color: white;
-                            -fx-border-width: 2px;
-                            -fx-cursor: hand;
-                            """);
-                });
+                button.setOnMousePressed(_ -> button.setStyle("""
+                        -fx-font-family: 'Arial Black';
+                        -fx-font-weight: bold;
+                        -fx-text-fill: black;
+                        -fx-font-size: 28px;
+                        -fx-padding: 20px;
+                        -fx-min-width: 90px;
+                        -fx-min-height: 90px;
+                        -fx-background-color: white;
+                        -fx-border-color: white;
+                        -fx-border-width: 2px;
+                        -fx-cursor: hand;
+                        """));
 
-                button.setOnMouseReleased(event -> {
-                    button.setStyle("""
-                            -fx-font-family: 'Arial Black';
-                            -fx-font-weight: bold;
-                            -fx-text-fill: white;
-                            -fx-font-size: 28px;
-                            -fx-padding: 20px;
-                            -fx-min-width: 90px;
-                            -fx-min-height: 90px;
-                            -fx-background-color: red;
-                            -fx-border-color: white;
-                            -fx-border-width: 2px;
-                            -fx-cursor: hand;
-                            """);
-                });
+                button.setOnMouseReleased(_ -> button.setStyle("""
+                        -fx-font-family: 'Arial Black';
+                        -fx-font-weight: bold;
+                        -fx-text-fill: white;
+                        -fx-font-size: 28px;
+                        -fx-padding: 20px;
+                        -fx-min-width: 90px;
+                        -fx-min-height: 90px;
+                        -fx-background-color: red;
+                        -fx-border-color: white;
+                        -fx-border-width: 2px;
+                        -fx-cursor: hand;
+                        """));
 
                 if (key.equals("C")) {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         String text = amountField.getText();
                         if (!text.isEmpty()) {
                             amountField.setText(text.substring(0, text.length() - 1));
@@ -167,14 +163,14 @@ public class OutputMoney {
                         sessionWarning.checkInactivity(); // Сбрасываем таймер
                     });
                 } else if (key.equals("->")) {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         if (sessionWarning != null) {
                             sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                         }
                         processWithdrawal(primaryStage, cardNumber);
                     });
                 } else {
-                    button.setOnAction(event -> {
+                    button.setOnAction(_ -> {
                         if (sessionWarning != null) {
                             sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
                         }
@@ -232,8 +228,8 @@ public class OutputMoney {
             return;
         }
 
-        ConfirmWithdraw confirmWithdraw = new ConfirmWithdraw(primaryStage, scene, cardNumber, amount);
-        primaryStage.setScene(confirmWithdraw.getScene());
+        WithdrawalProcessor withdrawal = new WithdrawalProcessor(primaryStage, cardNumber, amount);
+        primaryStage.setScene(withdrawal.getScene());
     }
 
     public Scene getScene() {

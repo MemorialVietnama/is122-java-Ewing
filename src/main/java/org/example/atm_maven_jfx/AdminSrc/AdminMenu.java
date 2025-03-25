@@ -12,7 +12,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.AdminSrc.Functions.ButtonUtil;
-import org.example.atm_maven_jfx.AdminSrc.Functions.StatsUtil;
 import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations;
 import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
@@ -62,7 +61,7 @@ public class AdminMenu {
 
         // Кнопка "Инкассация"
         Button incassationButton = ButtonUtil.createButton("Инкассация", defaultStyle, hoverStyle, pressedStyle);
-        incassationButton.setOnAction(e -> {
+        incassationButton.setOnAction(_ -> {
             Incantations incossations = new Incantations();
             Scene incossationsScene = incossations.createScene(primaryStage, primaryStage.getScene()); // Передаем текущую сцену
             primaryStage.setScene(incossationsScene);
@@ -70,17 +69,17 @@ public class AdminMenu {
         vbox.getChildren().add(incassationButton);
         // Кнопка "Настройки Среды"
         Button settingsButton = ButtonUtil.createButton("Настройки Среды", defaultStyle, hoverStyle, pressedStyle);
-        settingsButton.setOnAction(e -> {
+        settingsButton.setOnAction(_ -> {
             ServiceManagement serviceManagement = new ServiceManagement(primaryStage, primaryStage.getScene());
             primaryStage.setScene(serviceManagement.getScene());
         });
         vbox.getChildren().add(settingsButton);
         // Кнопка "Открыть MainMenu"
         Button mainMenuButton = ButtonUtil.createButton("Открыть MainMenu", defaultStyle, hoverStyle, pressedStyle);
-        mainMenuButton.setOnAction(e -> {
+        mainMenuButton.setOnAction(_ -> {
             // Пример номера карты (можно заменить на реальный)
             String cardNumber = "1234567891234567";
-            MainMenu mainMenu = new MainMenu(primaryStage, primaryStage.getScene(), cardNumber);
+            MainMenu mainMenu = new MainMenu(primaryStage, cardNumber);
             primaryStage.setScene(mainMenu.getScene());
         });
         vbox.getChildren().add(mainMenuButton);
@@ -89,11 +88,11 @@ public class AdminMenu {
         Button buttonStart = ButtonUtil.createButton("Запустить", defaultStyle, hoverStyle, pressedStyle);
         vbox.getChildren().add(buttonStart);
 
-        buttonStart.setOnAction(e -> {
+        buttonStart.setOnAction(_ -> {
             BlockWindow.showWithPreloader(primaryStage); // Используем существующий Stage
         });
 
-        buttonStart.setOnAction(e -> {
+        buttonStart.setOnAction(_ -> {
             BlockWindow blockWindow = new BlockWindow();
             Stage newStage = new Stage();
             blockWindow.start(newStage);
@@ -101,11 +100,7 @@ public class AdminMenu {
         });
 
         // Создание сцены
-        Scene scene = new Scene(vbox, 1930, 1090);
 
-        // Загрузка и отображение статистики
-        StatsUtil.loadAndDisplayStats(primaryStage);
-
-        return scene;
+        return new Scene(vbox, 1930, 1090);
     }
 }

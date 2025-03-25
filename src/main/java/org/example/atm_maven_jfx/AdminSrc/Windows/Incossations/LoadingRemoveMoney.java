@@ -28,9 +28,7 @@ public class LoadingRemoveMoney {
         }
 
         // Анимация на 5 секунд
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
-            primaryStage.setScene(returnScene);
-        }));
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), _ -> primaryStage.setScene(returnScene)));
         timeline.setCycleCount(1);
         timeline.play();
 
