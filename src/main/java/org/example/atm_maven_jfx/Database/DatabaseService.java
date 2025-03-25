@@ -298,7 +298,7 @@ public class DatabaseService {
         }
     }
 
-    public static void updateCardBalance(String cardNumber, double amount) throws SQLException {
+  /*  public static void updateCardBalance(String cardNumber, double amount) throws SQLException {
         System.out.println("DEBUG: Вызов updateCardBalance с cardNumber=" + cardNumber + ", amount=" + amount);
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_QUERY)) {
@@ -308,7 +308,7 @@ public class DatabaseService {
             System.out.println("DEBUG: Баланс карты обновлён, строк обновлено: " + rowsUpdated);
         }
     }
-
+*/
     public static boolean checkCardInDatabase(String cardNumber) throws SQLException {
         System.out.println("DEBUG: Вызов checkCardInDatabase с cardNumber=" + cardNumber);
         try (Connection conn = getConnection();
@@ -389,10 +389,10 @@ public class DatabaseService {
     public static boolean updateServiceStatus(long serviceId, boolean isActive) throws SQLException {
         System.out.println("DEBUG: Вызов updateServiceStatus с serviceId=" + serviceId + ", isActive=" + isActive);
         try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(UPDATE_SERVICE_STATUS_QUERY)) {
-            pstmt.setString(1, String.valueOf(isActive));
-            pstmt.setLong(2, serviceId);
-            int rows = pstmt.executeUpdate();
+             CallableStatement stmt = conn.prepareCall(UPDATE_SERVICE_STATUS_QUERY)) {
+            stmt.setBoolean(1, isActive); // Используем setBoolean вместо setString
+            stmt.setLong(2, serviceId);
+            int rows = stmt.executeUpdate();
             System.out.println("DEBUG: Статус услуги обновлён, строк обновлено: " + rows);
             return rows > 0;
         }

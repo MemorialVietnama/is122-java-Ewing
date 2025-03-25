@@ -12,6 +12,7 @@
         <language minSize="98" name="Java" />
       </Languages>
     </inspection_tool>
+    <inspection_tool class="EqualsWithItself" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="ExtractMethodRecommender" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="minLength" value="1705" />
       <option name="maxParameters" value="1" />

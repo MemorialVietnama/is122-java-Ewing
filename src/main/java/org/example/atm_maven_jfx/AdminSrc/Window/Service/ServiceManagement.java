@@ -11,8 +11,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 
@@ -35,12 +37,13 @@ public class ServiceManagement {
 
         // Заголовок
         Label titleLabel = new Label("Управление Услугами");
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white; -fx-font-family: Arial;");
 
         // Таблица услуг
         TableView<Service> tableView = new TableView<>();
         tableView.setPrefSize(100, 300);
         tableView.setEditable(true);
+        tableView.setStyle("-fx-font-family: Arial; -fx-font-size: 14px");
         tableView.setMaxWidth(800);
         tableView.columnResizePolicyProperty().set(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
@@ -58,7 +61,7 @@ public class ServiceManagement {
         nameColumn.setCellValueFactory(cellData ->
                 cellData.getValue().nameProperty()
         );
-        nameColumn.setPrefWidth(100); // Фиксированная ширина
+        nameColumn.setPrefWidth(200); // Фиксированная ширина
 
         // Колонка "Статус" с чекбоксами
         TableColumn<Service, Boolean> activeStatusColumn = new TableColumn<>("Статус");
@@ -89,10 +92,20 @@ public class ServiceManagement {
         Button backButton = new Button("Назад");
         backButton.setOnAction(_ -> primaryStage.setScene(previousScene));
 
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.rgb(0, 0, 0, 0.5));
+        shadow.setRadius(5);
+        shadow.setOffsetX(3);
+        shadow.setOffsetY(3);
+
+        List.of(addButton, deleteButton, saveButton, backButton).forEach(btn -> btn.setStyle("-fx-font-family: Arial; -fx-font-size: 14px; -fx-background-color: white; -fx-padding: 10px 20px; -fx-text-fill: red; -fx-font-weight: bold;"));
+        List.of(addButton,deleteButton,saveButton,backButton).forEach(btn -> btn.setEffect(shadow));
+
         // Загрузка данных из БД
         loadServicesFromDatabase(tableView);
 
         root.getChildren().addAll(titleLabel, tableView, buttonBox, backButton);
+        root.setStyle("-fx-background-color: red;");
         return new Scene(root, 800, 600);
     }
 
@@ -184,22 +197,35 @@ public class ServiceManagement {
 
     public void saveConfiguration() {
         System.out.println("Сохранение конфигурации...");
+        boolean success = true;
         for (Service service : services) {
             try {
+                // Проверяем, активна ли услуга в БД
+                List<String> activeServices = DatabaseService.getActiveServices();
+                boolean currentStatus = activeServices.contains(service.getName());
+
+                if (currentStatus == service.isActiveStatus()) {
+                    System.out.println("Статус услуги ID=" + service.getId() + " не изменился, пропускаем");
+                    continue;
+                }
+
                 System.out.println("Обновление статуса услуги: ID=" + service.getId() +
                         ", Name=" + service.getName() +
                         ", ActiveStatus=" + service.isActiveStatus());
                 if (!DatabaseService.updateServiceStatus(service.getId(), service.isActiveStatus())) {
                     System.out.println("Ошибка при обновлении статуса услуги: ID=" + service.getId());
-                    showErrorAlert("Не удалось сохранить конфигурацию для услуги: " + service.getName());
+                    success = false;
                 }
             } catch (SQLException e) {
                 System.out.println("Ошибка при сохранении конфигурации: " + e.getMessage());
                 showErrorAlert("Не удалось сохранить конфигурацию.");
+                success = false;
             }
         }
-        showSuccessAlert();
-        System.out.println("Конфигурация успешно сохранена.");
+        if (success) {
+            showSuccessAlert();
+            System.out.println("Конфигурация успешно сохранена.");
+        }
     }
 
     private void showErrorAlert(String message) {
