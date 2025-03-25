@@ -236,7 +236,7 @@ public class PinCode {
                 if (isValidPin) {
                     // Логирование успешного входа
                     logOperation(cardNumber, "Успешный вход в систему");
-                    MainMenu mainMenu = new MainMenu(primaryStage, primaryStage.getScene(), cardNumber);
+                    MainMenu mainMenu = new MainMenu(primaryStage, cardNumber);
                     SceneTransition.changeSceneWithAnimation(primaryStage, mainMenu.getScene());
                 } else {
                     // Логирование неудачного входа
