@@ -14,6 +14,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        org.example.atm_maven_jfx.DatabaseInitializer.checkAndCreateDatabase(); // Проверка и создание базы данных
         Scene previousScene = new Scene(new javafx.scene.layout.StackPane(), 400, 300);
         FirstAuth firstAuth = new FirstAuth(previousScene);
         firstAuth.start(primaryStage);
