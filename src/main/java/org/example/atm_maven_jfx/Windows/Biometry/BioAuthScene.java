@@ -43,7 +43,7 @@ public class BioAuthScene {
         webEngine.load(url);
 
         // Обработка события загрузки страницы
-        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+        webEngine.getLoadWorker().stateProperty().addListener((_, _, newValue) -> {
             if (newValue == javafx.concurrent.Worker.State.SUCCEEDED) {
                 logger.info("Страница успешно загружена.");
 
@@ -57,7 +57,7 @@ public class BioAuthScene {
                 // Получение данных через JavaScript
                 Object result = webEngine.executeScript("document.getElementById('dataElement')?.innerText");
                 if (result != null) {
-                    logger.info("Полученные данные: " + result.toString());
+                    logger.info("Полученные данные: " + result);
                 } else {
                     logger.warning("Элемент с данными не найден.");
                 }
@@ -65,7 +65,7 @@ public class BioAuthScene {
         });
 
         // Обработка ошибок загрузки
-        webEngine.getLoadWorker().exceptionProperty().addListener((observable, oldValue, newValue) -> {
+        webEngine.getLoadWorker().exceptionProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 logger.severe("Ошибка загрузки страницы: " + newValue.getMessage());
             }
@@ -100,12 +100,12 @@ public class BioAuthScene {
         // Кнопка "Назад"
         Button backButton = new Button("Назад");
         backButton.setStyle("-fx-padding: 10 20; -fx-font-size: 16px; -fx-background-color: #4CAF50; -fx-text-fill: white;");
-        backButton.setOnAction(e -> {
+        backButton.setOnAction(_ -> {
             if (previousScene != null) {
                 FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), webView.getParent());
                 fadeOut.setFromValue(1.0);
                 fadeOut.setToValue(0.0);
-                fadeOut.setOnFinished(event -> stage.setScene(previousScene));
+                fadeOut.setOnFinished(_ -> stage.setScene(previousScene));
                 fadeOut.play();
             } else {
                 logger.severe("Предыдущая сцена не определена.");

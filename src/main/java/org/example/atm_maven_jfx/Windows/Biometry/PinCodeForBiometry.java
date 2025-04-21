@@ -42,7 +42,7 @@ public class PinCodeForBiometry {
         pinLabel.setStyle("""
                -fx-text-fill: white;
                -fx-font-size: 62;
-                """);
+               """);
         PasswordField pinField = createPinField();
         Button backButton = createButton();
 

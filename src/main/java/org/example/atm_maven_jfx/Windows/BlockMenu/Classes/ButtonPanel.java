@@ -71,7 +71,7 @@ public class ButtonPanel {
         statusLabel.setVisible(false); // По умолчанию скрыта
 
         // Проверка доступности сайта
-        boolean isSiteAvailable = checkSiteAvailability("http://127.0.0.1:8080/webcam");
+        boolean isSiteAvailable = checkSiteAvailability();
 
         if (!isSiteAvailable) {
             button3.setDisable(true); // Деактивируем кнопку
@@ -107,12 +107,11 @@ public class ButtonPanel {
     /**
      * Проверяет доступность сайта по указанному URL.
      *
-     * @param urlString URL для проверки
      * @return true, если сайт доступен, иначе false
      */
-    private boolean checkSiteAvailability(String urlString) {
+    private boolean checkSiteAvailability() {
         try {
-            URL url = new URL(urlString);
+            URL url = new URL("http://127.0.0.1:8080/webcam");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("HEAD");
             connection.setConnectTimeout(3000); // Таймаут в 3 секунды
