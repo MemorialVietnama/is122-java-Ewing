@@ -1,10 +1,13 @@
 module org.example.atm_maven_jfx {
-    requires javafx.controls;
     requires javafx.fxml;
 
     requires net.synedra.validatorfx;
-    requires junit;
     requires org.firebirdsql.jaybird;
+    requires javafx.web;
+    requires java.desktop;
+    requires org.bytedeco.opencv;
+    requires jdk.jsobject;
+    requires java.net.http;
 
     opens org.example.atm_maven_jfx to javafx.fxml, javafx.base;
     opens org.example.atm_maven_jfx.AdminSrc.Window.Service to javafx.fxml, javafx.base;

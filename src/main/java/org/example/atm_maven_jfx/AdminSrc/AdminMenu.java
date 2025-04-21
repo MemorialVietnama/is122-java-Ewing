@@ -12,6 +12,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.AdminSrc.Functions.ButtonUtil;
+import org.example.atm_maven_jfx.AdminSrc.Window.BlockATM.TechPauseWindow;
 import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations;
 import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
@@ -26,8 +27,8 @@ public class AdminMenu {
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         vbox.setPadding(new Insets(25, 25, 25, 25));
-        vbox.setTranslateY(-600);
-        vbox.setTranslateX(-1300);
+        vbox.setTranslateY(-400);
+        vbox.setTranslateX(-1000);
 
         // Загрузка фонового изображения
         URL resourceUrl = getClass().getResource("/org/example/atm_maven_jfx/Assets/header-bg-big.jpg");
@@ -83,6 +84,14 @@ public class AdminMenu {
             primaryStage.setScene(mainMenu.getScene());
         });
         vbox.getChildren().add(mainMenuButton);
+        // Кнопка "Блокировать Банкомат"
+        Button blockAtmButton = ButtonUtil.createButton("Блокировать Банкомат", defaultStyle, hoverStyle, pressedStyle);
+        blockAtmButton.setOnAction(_ -> {
+            TechPauseWindow techPauseWindow = new TechPauseWindow();
+            Scene techPauseScene = techPauseWindow.createScene();
+            primaryStage.setScene(techPauseScene);
+        });
+        vbox.getChildren().add(blockAtmButton);
 
         // Кнопка "Запустить"
         Button buttonStart = ButtonUtil.createButton("Запустить", defaultStyle, hoverStyle, pressedStyle);

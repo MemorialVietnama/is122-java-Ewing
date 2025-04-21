@@ -4,12 +4,18 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.AdminSrc.FirstAuth;
+import org.example.atm_maven_jfx.Windows.Biometry.BioAuthScene;
 
 import java.io.IOException;
 
 public class Main extends Application {
     public static void main(String[] args) {
+
         launch(args);
+        System.setProperty("javafx.userAgentStylesheetUrl", "null");
+        Application.launch(String.valueOf(BioAuthScene.class),
+                "--enable-features=WebRTCPipeWireCapturer",
+                "--use-fake-ui-for-media-stream");
     }
 
     @Override
