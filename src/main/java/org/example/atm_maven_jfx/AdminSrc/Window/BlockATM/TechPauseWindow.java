@@ -40,7 +40,7 @@ public class TechPauseWindow {
                -fx-font-size: 40;
                -fx-font-weight: bold;
                
-                """);
+               """);
         titleText.setFill(Color.WHITE);
 
         Text apologyText = new Text("Просим прощения от лица EvillBank");
@@ -49,7 +49,7 @@ public class TechPauseWindow {
                -fx-font-size: 40;
                -fx-font-weight: bold;
                
-                """);
+               """);
         apologyText.setFill(Color.WHITE);
 
         Text supportText = new Text("Техническая поддержка: +7-900-555-35-35, Номер банкомата №123456");
@@ -58,7 +58,7 @@ public class TechPauseWindow {
                -fx-font-size: 40;
                -fx-font-weight: bold;
                
-                """);
+               """);
         supportText.setFill(Color.WHITE);
 
         // Добавление текстовых элементов в контейнер
