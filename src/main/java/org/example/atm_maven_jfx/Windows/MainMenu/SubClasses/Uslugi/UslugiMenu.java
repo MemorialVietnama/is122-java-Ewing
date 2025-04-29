@@ -172,7 +172,10 @@ public class UslugiMenu implements ServiceMenu {
                 currentPage[0]--;
                 pageLabel.setText("Страница " + currentPage[0] + " из " + totalPages);
                 updateButtons.run();
-                sessionWarning.checkInactivity(); // Сбрасываем таймер
+                if (sessionWarning != null) {
+                    sessionWarning.checkInactivity(); // Сбрасываем таймер
+                }
+
             }
         });
 
@@ -181,7 +184,9 @@ public class UslugiMenu implements ServiceMenu {
                 currentPage[0]++;
                 pageLabel.setText("Страница " + currentPage[0] + " из " + totalPages);
                 updateButtons.run();
-                sessionWarning.checkInactivity(); // Сбрасываем таймер
+                if (sessionWarning != null) {
+                    sessionWarning.checkInactivity(); // Сбрасываем таймер
+                }
             }
         });
 

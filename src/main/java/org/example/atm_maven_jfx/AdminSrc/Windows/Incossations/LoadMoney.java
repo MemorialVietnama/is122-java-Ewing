@@ -8,7 +8,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class LoadMoney {
-
     public static Scene createScene(Stage primaryStage, Scene nextScene) {
         Label instructionLabel = new Label("Вставьте кассеты в приёмник");
         instructionLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24px;");
@@ -24,7 +23,11 @@ public class LoadMoney {
                     -fx-background-color: white;
                     -fx-cursor: hand;
                 """);
-        continueButton.setOnAction(_ -> primaryStage.setScene(nextScene));
+        continueButton.setOnAction(_ -> {
+            // Переход на сцену загрузки с анимацией
+            Scene loadingScene = LoadingLoadMoney.createScene(primaryStage, nextScene);
+            primaryStage.setScene(loadingScene);
+        });
 
         VBox layout = new VBox(20, instructionLabel, continueButton);
         layout.setAlignment(Pos.CENTER);

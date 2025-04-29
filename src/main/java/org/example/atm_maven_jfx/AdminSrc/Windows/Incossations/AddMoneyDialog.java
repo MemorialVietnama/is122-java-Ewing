@@ -9,143 +9,142 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddMoneyDialog {
+    private final Stage dialogStage;
+    private final Stage primaryStage;
+    private final String atmId;
+    private final Scene nextScene;
+    private final Map<String, TextField> denominationFields = new HashMap<>();
+    private final String[] denominations = {"50", "100", "200", "500", "1000", "2000", "5000"};
 
-    public static boolean display(TableView<Incantations.CashStorage> tableView) {
-        boolean[] isDataAdded = {false};
-        Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("Добавить деньги");
+    // Измененный конструктор с добавлением параметров
+    public AddMoneyDialog(Stage parentStage, Stage primaryStage, String atmId, Scene nextScene) {
+        this.primaryStage = primaryStage;
+        this.atmId = atmId;
+        this.nextScene = nextScene;
 
-        VBox layout = new VBox(10);
-        layout.setPadding(new Insets(10));
-        layout.setStyle("-fx-background-color: #f4f4f9; -fx-border-color: #ccc; -fx-border-radius: 5px;");
+        dialogStage = new Stage();
+        dialogStage.initModality(Modality.WINDOW_MODAL);  // Исправлено WINDOW_MODAL
+        dialogStage.initOwner(parentStage);
+        dialogStage.setTitle("Добавление денег в банкомат");
 
-        Label totalAmountLabel = new Label("Общая сумма: 0");
-        totalAmountLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #333;");
+        VBox mainLayout = new VBox(10);
+        mainLayout.setPadding(new Insets(15));
 
-        TextField countField50 = new TextField("0");
-        TextField countField100 = new TextField("0");
-        TextField countField500 = new TextField("0");
-        TextField countField1000 = new TextField("0");
-        TextField countField2000 = new TextField("0");
-        TextField countField5000 = new TextField("0");
+        // Create input fields for each denomination
+        for (String denom : denominations) {
+            HBox hbox = new HBox(10);
+            Label label = new Label(denom + " руб:");
+            TextField textField = new TextField();
+            textField.setPromptText("Количество");
+            textField.setText("0");
+            denominationFields.put(denom, textField);
 
-        countField50.setPrefWidth(60);
-        countField100.setPrefWidth(60);
-        countField500.setPrefWidth(60);
-        countField1000.setPrefWidth(60);
-        countField2000.setPrefWidth(60);
-        countField5000.setPrefWidth(60);
+            hbox.getChildren().addAll(label, textField);
+            mainLayout.getChildren().add(hbox);
+        }
 
-        Runnable updateTotal = () -> {
-            try {
-                int total = Integer.parseInt(countField50.getText()) * 50 +
-                        Integer.parseInt(countField100.getText()) * 100 +
-                        Integer.parseInt(countField500.getText()) * 500 +
-                        Integer.parseInt(countField1000.getText()) * 1000 +
-                        Integer.parseInt(countField2000.getText()) * 2000 +
-                        Integer.parseInt(countField5000.getText()) * 5000;
-                totalAmountLabel.setText("Общая сумма: " + total);
-            } catch (NumberFormatException e) {
-                totalAmountLabel.setText("Общая сумма: 0");
-            }
-        };
+        // Create buttons
+        HBox buttonBox = new HBox(10);
+        Button autoFillButton = new Button("Авто (по 10 купюр)");
+        autoFillButton.setOnAction(_ -> autoFillDenominations());
 
-        countField50.textProperty().addListener((_, _, _) -> updateTotal.run());
-        countField100.textProperty().addListener((_, _, _) -> updateTotal.run());
-        countField500.textProperty().addListener((_, _, _) -> updateTotal.run());
-        countField1000.textProperty().addListener((_, _, _) -> updateTotal.run());
-        countField2000.textProperty().addListener((_, _, _) -> updateTotal.run());
-        countField5000.textProperty().addListener((_, _, _) -> updateTotal.run());
+        Button addButton = new Button("Добавить");
+        addButton.setOnAction(_ -> addMoneyToATM());
 
-        Button autoButton = new Button("Авто");
-        autoButton.setStyle("-fx-font-size: 14px; -fx-padding: 8px 16px; -fx-background-color: #2196f3; -fx-text-fill: white; -fx-border-radius: 5px;");
-        autoButton.setOnAction(_ -> {
-            countField50.setText("10");
-            countField100.setText("10");
-            countField500.setText("10");
-            countField1000.setText("10");
-            countField2000.setText("10");
-            countField5000.setText("10");
-            updateTotal.run();
-        });
+        Button cancelButton = new Button("Отмена");
+        cancelButton.setOnAction(_ -> dialogStage.close());
 
-        Button okButton = new Button("ОК");
-        okButton.setStyle("-fx-font-size: 14px; -fx-padding: 8px 16px; -fx-background-color: #4caf50; -fx-text-fill: white; -fx-border-radius: 5px;");
-        okButton.setOnAction(_ -> {
-            try {
-                int count50 = Integer.parseInt(countField50.getText());
-                int count100 = Integer.parseInt(countField100.getText());
-                int count500 = Integer.parseInt(countField500.getText());
-                int count1000 = Integer.parseInt(countField1000.getText());
-                int count2000 = Integer.parseInt(countField2000.getText());
-                int count5000 = Integer.parseInt(countField5000.getText());
+        buttonBox.getChildren().addAll(autoFillButton, addButton, cancelButton);
+        mainLayout.getChildren().add(buttonBox);
 
-                int total = count50 * 50 + count100 * 100 + count500 * 500 +
-                        count1000 * 1000 + count2000 * 2000 + count5000 * 5000;
-
-                if (total <= 0) {
-                    showAlert("Сумма должна быть больше нуля.");
-                    return;
-                }
-
-                if (count50 < 0 || count100 < 0 || count500 < 0 ||
-                        count1000 < 0 || count2000 < 0 || count5000 < 0) {
-                    showAlert("Количество не может быть отрицательным.");
-                    return;
-                }
-
-                DatabaseService.insertCashIntoDatabase(count50, 50);
-                DatabaseService.insertCashIntoDatabase(count100, 100);
-                DatabaseService.insertCashIntoDatabase(count500, 500);
-                DatabaseService.insertCashIntoDatabase(count1000, 1000);
-                DatabaseService.insertCashIntoDatabase(count2000, 2000);
-                DatabaseService.insertCashIntoDatabase(count5000, 5000);
-
-                isDataAdded[0] = true;
-
-                window.close();
-
-                Stage primaryStage = (Stage) tableView.getScene().getWindow();
-                Scene loadMoneyScene = LoadMoney.createScene(primaryStage,
-                        LoadingLoadMoney.createScene(primaryStage, tableView.getScene()));
-                primaryStage.setScene(loadMoneyScene);
-
-            } catch (NumberFormatException ex) {
-                showAlert("Введите корректные числовые значения.");
-            } catch (SQLException ex) {
-                showAlert("Ошибка при добавлении данных в базу.");
-                ex.printStackTrace();
-            }
-        });
-
-        layout.getChildren().addAll(
-                totalAmountLabel,
-                new HBox(10, new Label("50 номинал: Кол-во:"), countField50),
-                new HBox(10, new Label("100 номинал: Кол-во:"), countField100),
-                new HBox(10, new Label("500 номинал: Кол-во:"), countField500),
-                new HBox(10, new Label("1000 номинал: Кол-во:"), countField1000),
-                new HBox(10, new Label("2000 номинал: Кол-во:"), countField2000),
-                new HBox(10, new Label("5000 номинал: Кол-во:"), countField5000),
-                new HBox(10, autoButton, okButton)
-        );
-
-        Scene scene = new Scene(layout, 300, 300);
-        window.setScene(scene);
-        window.showAndWait();
-
-        return isDataAdded[0];
+        Scene scene = new Scene(mainLayout, 300, 400);
+        dialogStage.setScene(scene);
     }
 
-    private static void showAlert(String message) {
+    private void autoFillDenominations() {
+        for (String denom : denominations) {
+            denominationFields.get(denom).setText("10");
+        }
+    }
+
+    private void addMoneyToATM() {
+        Connection connection = null;
+        try {
+            connection = DatabaseService.getConnection();
+            connection.setAutoCommit(false);
+
+            for (String denom : denominations) {
+                TextField field = denominationFields.get(denom);
+                int count;
+
+                try {
+                    count = Integer.parseInt(field.getText());
+                } catch (NumberFormatException e) {
+                    showAlert("Ошибка", "Некорректное количество для номинала " + denom);
+                    return;
+                }
+
+                if (count > 0) {
+                    for (int i = 0; i < count; i++) {
+                        String cashId = "BN_" + denom + "_" + System.currentTimeMillis() + "_" + i;
+                        String serialNumber = "SN_" + denom + "_" + (int)(Math.random() * 1000000);
+
+                        try (PreparedStatement stmt = connection.prepareStatement(
+                                "INSERT INTO ATM_CASH_STORAGE (ID_CASH, ID_ATM, DENOMINATIONS, SERIAL_NUMBER) " +
+                                        "VALUES (?, ?, ?, ?)")) {
+                            stmt.setString(1, cashId);
+                            stmt.setString(2, atmId);
+                            stmt.setString(3, denom);
+                            stmt.setString(4, serialNumber);
+                            stmt.executeUpdate();
+                        }
+                    }
+                }
+            }
+
+            connection.commit();
+            dialogStage.close();
+
+            // Переход на сцену LoadMoney с анимацией загрузки
+            Scene loadingScene = LoadMoney.createScene(primaryStage, nextScene);
+            primaryStage.setScene(loadingScene);
+
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            showAlert("Ошибка базы данных",
+                    "Не удалось добавить деньги: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Ошибка");
+        alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.getDialogPane().setStyle("-fx-background-color: #fff; -fx-border-color: #ddd; -fx-border-radius: 5px;");
         alert.showAndWait();
+    }
+
+    public void showAndWait() {
+        dialogStage.showAndWait();
     }
 }

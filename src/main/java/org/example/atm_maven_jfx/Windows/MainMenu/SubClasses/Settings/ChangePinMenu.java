@@ -125,7 +125,9 @@ public class ChangePinMenu implements ChangePinMenuInterface {
             } else {
                 showError("Ошибка: Не удалось изменить PIN-код");
             }
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            if (sessionWarning != null) {
+                sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
+            }
         });
 
         Button backButton = new Button("Назад");

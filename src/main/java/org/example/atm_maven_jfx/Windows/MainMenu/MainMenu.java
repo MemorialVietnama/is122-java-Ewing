@@ -247,7 +247,7 @@ public class MainMenu {
         }
         String visiblePart = cardNumber.substring(0, 6); // Берем первые 6 символов
         String maskedPart = "*".repeat(cardNumber.length() - 6); // Генерируем "*" для остальной части
-        return "Карта: " + visiblePart + maskedPart + "\nБаланс: " + balance + " кредитов";
+        return "Карта: " + visiblePart + maskedPart + "\nБаланс: " + balance + " руб";
     }
 
 }

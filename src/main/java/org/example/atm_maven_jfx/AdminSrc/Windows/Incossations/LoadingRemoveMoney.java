@@ -8,34 +8,42 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.example.atm_maven_jfx.Database.DatabaseService;
 
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 public class LoadingRemoveMoney {
 
-    public static Scene createScene(Stage primaryStage, Scene returnScene, List<RemoveMoneyAction.CashStorage> cashToRemove) {
-        Label animatedLabel = new Label("Удаление купюр...");
+    public static Scene createScene(Stage primaryStage, Scene returnScene) {
+        List<String> phrases = Arrays.asList(
+                "Обработка данных...",
+                "Проверка кассет...",
+                "Загрузка данных..."
+        );
+
+        Label animatedLabel = new Label();
         animatedLabel.setStyle("-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold");
 
-        // Удаляем купюры из базы данных
-        try {
-            DatabaseService.removeCashFromDatabase(cashToRemove);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            animatedLabel.setText("Ошибка при удалении купюр.");
+        // Анимация текста
+        Timeline timeline = new Timeline();
+        int delay = 0;
+        for (String phrase : phrases) {
+            for (int i = 0; i <= phrase.length(); i++) {
+                int finalI = i;
+                timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), _ -> animatedLabel.setText(phrase.substring(0, finalI))));
+                delay += 100;
+            }
+            delay += 1000;
         }
 
-        // Анимация на 5 секунд
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(5), _ -> primaryStage.setScene(returnScene)));
+        // Выполнение операции с базой и возврат на предыдущую сцену
+        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(delay), _ -> primaryStage.setScene(returnScene)));
+
         timeline.setCycleCount(1);
         timeline.play();
 
         VBox layout = new VBox(animatedLabel);
         layout.setAlignment(Pos.CENTER);
-        layout.setTranslateX(-400);
-        layout.setTranslateY(-400);
         layout.setStyle("-fx-background-color: red;");
 
         return new Scene(layout, 1920, 1080);

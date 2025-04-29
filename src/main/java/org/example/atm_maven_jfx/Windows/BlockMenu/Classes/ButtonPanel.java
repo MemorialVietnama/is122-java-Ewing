@@ -105,7 +105,7 @@ public class ButtonPanel {
     }
 
     /**
-     * Проверяет доступность сайта по указанному URL.
+     * Проверяет доступность сайта по-указанному URL.
      *
      * @return true, если сайт доступен, иначе false
      */
@@ -120,7 +120,7 @@ public class ButtonPanel {
             return responseCode == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
             // Логирование ошибки (можно заменить на использование логгера)
-            System.err.println("Ошибк а при проверке доступности сайта: " + e.getMessage());
+            System.err.println("Ошибка при проверке доступности сайта: " + e.getMessage());
             return false;
         }
     }

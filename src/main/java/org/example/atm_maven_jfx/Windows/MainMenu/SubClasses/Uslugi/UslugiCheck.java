@@ -6,22 +6,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.example.atm_maven_jfx.Functions.SessionWarning; // Импортируем SessionWarning
 import org.example.atm_maven_jfx.Windows.MainMenu.MainMenu;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Uslugi.Interfaces.ServiceCheck;
 
 public class UslugiCheck implements ServiceCheck {
     private final Scene scene;
-    private final SessionWarning sessionWarning; // Поле для SessionWarning
 
     public UslugiCheck(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName) {
         this.scene = createScene(primaryStage, cardNumber, amount, accountNumber, serviceName);
 
-        // Создаем объект SessionWarning
-        sessionWarning = new SessionWarning(primaryStage);
-
-        // Запускаем проверку бездействия
-        sessionWarning.checkInactivity();
     }
 
     private Scene createScene(Stage primaryStage, String cardNumber, double amount, String accountNumber, String serviceName) {
@@ -35,7 +28,7 @@ public class UslugiCheck implements ServiceCheck {
         Label cardNumberLabel = new Label("Номер карты: " + cardNumber);
         cardNumberLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-family: Arial;");
 
-        Label amountLabel = new Label("Сумма оплаты: " + amount + " кредитов");
+        Label amountLabel = new Label("Сумма оплаты: " + amount + " руб.");
         amountLabel.setStyle("-fx-text-fill: white; -fx-font-size: 24px; -fx-font-family: Arial;");
 
         Label accountNumberLabel = new Label("Номер счета: " + accountNumber);
@@ -54,9 +47,6 @@ public class UslugiCheck implements ServiceCheck {
                     -fx-background-color: white;
                 """);
         backButton.setOnAction(_ -> {
-            if (sessionWarning != null) {
-                sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
-            }
             MainMenu mainMenu = new MainMenu(primaryStage, cardNumber);
             primaryStage.setScene(mainMenu.getScene());
             primaryStage.show();

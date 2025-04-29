@@ -142,17 +142,34 @@ public class Incantations {
         vbox.setStyle("-fx-background-color: red;");
 
         addMoney.setOnAction(_ -> {
-            boolean isDataAdded = AddMoneyDialog.display(tableView);
-            if (isDataAdded) {
-                loadCashStorageData(tableView);
+            // Создаем и показываем диалог с правильными параметрами
+            AddMoneyDialog dialog = new AddMoneyDialog(
+                    primaryStage,                   // родительское окно (Stage)
+                    primaryStage,                   // главное окно приложения
+                    "123456",                       // ID банкомата (замените на реальный)
+                    createScene(primaryStage, previousScene) // сцена для возврата (текущая сцена)
+            );
+
+            dialog.showAndWait(); // показываем диалог и ждем его закрытия
+
+            // После закрытия диалога обновляем таблицу и баланс
+            loadCashStorageData(tableView);
+            try {
+                atmBalanceLabel.setText(DatabaseService.loadAtmBalance());
+                int totalAmount = DatabaseService.calculateTotalAmount();
+                updateIncassationStatus(totalAmount, incassationStatusLabel);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
 
         removeMoney.setOnAction(_ -> {
-            boolean isDataRemoved = RemoveMoneyDialog.display(tableView);
-            if (isDataRemoved) {
-                loadCashStorageData(tableView);
-            }
+            RemoveMoneyDialog dialog = new RemoveMoneyDialog(
+                    primaryStage,
+                    primaryStage,
+                    createScene(primaryStage, previousScene)
+            );
+            dialog.showAndWait();
         });
 
         return new Scene(vbox, 1920, 1080);
@@ -171,7 +188,7 @@ public class Incantations {
 
     // Метод для обновления статуса инкассации
     private void updateIncassationStatus(int totalAmount, Label incassationStatusLabel) {
-        if (totalAmount > 200_000 || totalAmount < 50_000) {
+        if (totalAmount > 150000 || totalAmount < 25000) {
             incassationStatusLabel.setText("Требуется инкассация");
         } else {
             incassationStatusLabel.setText("Инкассация не требуется");

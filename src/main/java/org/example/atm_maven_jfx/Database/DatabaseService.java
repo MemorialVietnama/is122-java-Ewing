@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations.CashStorage;
-import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.RemoveMoneyAction;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Deposit.DepositOperation;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.SettingsCardMenu;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.TransactionHistoryMenu;
@@ -32,18 +31,12 @@ public class DatabaseService {
     private static final String CHECK_NOMINAL_EXISTS_QUERY = "{CALL CHECK_NOMINAL_EXISTS(?)}";
     private static final String GET_CLIENT_INFO_QUERY = "{CALL GET_CLIENT_INFO(?)}";
     private static final String LOG_OPERATION_QUERY = "{CALL LOG_OPERATION(?, ?, ?, ?)}";
-    // private static final String LOAD_SERVICES_QUERY = "{CALL GET_SERVICES()}";
     private static final String ADD_SERVICE_QUERY = "{CALL INSERT_SERVICE(?, ?)}";
     private static final String DELETE_SERVICE_QUERY = "{CALL DELETE_SERVICE_BY_NAME(?)}";
     private static final String UPDATE_SERVICE_STATUS_QUERY = "{CALL UPDATE_SERVICE_STATUS(?, ?)}";
     private static final String CHECK_SERVICE_EXISTS_QUERY = "{CALL COUNT_SERVICES_BY_NAME(?)}";
     private static final String GET_LAST_INSERTED_ID_QUERY = "{CALL GET_LAST_SERVICE_ID}";
     private static final String GET_ACTIVE_SERVICES_QUERY = "SELECT NAME_SERVICE FROM GET_ACTIVE_SERVICES";
-    private static final String GET_CASH_TO_REMOVE_QUERY = "{CALL GET_ATM_CASH_STORAGE()}";
-    private static final String DELETE_CASH_QUERY = "{CALL DELETE_ATM_CASH_BY_ID(?)}";
-    // private static final String GET_CASH_STORAGE_DATA_QUERY = "{CALL GET_ATM_CASH_DENOMINATIONS()}";
-    // private static final String DELETE_ISSUED_BILLS_QUERY = "{CALL DELETE_ATM_CASH_BY_SERIAL(?)}";
-    private static final String GET_CURRENT_CASH_COUNT = "{CALL GET_ATM_CASH_QUANTITY()}";
     private static final String TRANSACTION_HISTORY_QUERY = "{CALL GET_CLIENT_OPERATIONS(?)}";
     private static final String GET_ID_MAX_ATM_CASH = "{CALL GET_MAX_ATM_CASH_ID()}";
 
@@ -207,6 +200,7 @@ public class DatabaseService {
                 String maxId = getMaxCashId(); // Получаем максимальный ID один раз
                 long numericPart = maxId == null ? 0 : Long.parseLong(maxId.substring(2));
 
+                int batchSize = 100; // Размер пакета
                 for (int i = 0; i < count; i++) {
                     numericPart++; // Увеличиваем для каждой купюры
                     String idCash = "CS" + numericPart;
@@ -217,9 +211,12 @@ public class DatabaseService {
                     pstmt.setString(3, String.valueOf(denomination));
                     pstmt.setString(4, serialNumber);
                     pstmt.addBatch();
-                    System.out.println("DEBUG: Добавлена купюра: " + idCash + ", " + denomination + ", " + serialNumber);
+
+                    if (i % batchSize == 0 || i == count - 1) {
+                        pstmt.executeBatch(); // Выполняем пакет
+                        System.out.println("DEBUG: Выполнен пакет из " + batchSize + " записей");
+                    }
                 }
-                pstmt.executeBatch();
                 conn.commit(); // Фиксация транзакции
                 System.out.println("DEBUG: Купюры успешно добавлены");
             } catch (SQLException e) {
@@ -242,73 +239,70 @@ public class DatabaseService {
         return serial;
     }
 
-    public static Map<Integer, Integer> getCurrentCashCount() throws SQLException {
-        System.out.println("DEBUG: Вызов getCurrentCashCount");
+    public static Map<Integer, Integer> getCurrentCashCount(String atmId) throws SQLException {
+        System.out.println("DEBUG: Вызов getCurrentCashCount для банкомата: " + atmId);
         Map<Integer, Integer> cashCount = new HashMap<>();
+
+        // Запрос с фильтрацией по ID_ATM
+        String query = """
+        SELECT
+            CAST(TRIM(DENOMINATIONS) AS INTEGER) AS Nominal,
+            COUNT(*) AS Quantity
+        FROM
+            ATM_CASH_STORAGE
+        WHERE
+            ID_ATM = ?
+        GROUP BY
+            TRIM(DENOMINATIONS);
+    """;
+
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(GET_CURRENT_CASH_COUNT)) {
-            while (rs.next()) {
-                int denomination = rs.getInt("Nominal");
-                int count = rs.getInt("Quantity");
-                cashCount.put(denomination, count);
-                System.out.println("DEBUG: Номинал: " + denomination + ", Количество: " + count);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Устанавливаем параметр ID_ATM
+            stmt.setString(1, atmId);
+
+            // Выполняем запрос
+            try (ResultSet rs = stmt.executeQuery()) {
+                // Проверка метаданных ResultSet
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                System.out.println("DEBUG: Количество столбцов в ResultSet: " + columnCount);
+
+                // Логирование названий столбцов
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.println("DEBUG: Столбец " + i + ": " + metaData.getColumnName(i));
+                }
+
+                // Обработка строк ResultSet
+                int rowCount = 0;
+                while (rs.next()) {
+                    rowCount++;
+                    int denomination = rs.getInt("Nominal");
+                    int count = rs.getInt("Quantity");
+
+                    // Проверка на NULL
+                    if (rs.wasNull()) {
+                        System.out.println("DEBUG: Обнаружен NULL в строке " + rowCount);
+                        continue; // Пропускаем эту строку
+                    }
+
+                    System.out.println("DEBUG: Обработана строка " + rowCount + ": Номинал = " + denomination + ", Количество = " + count);
+                    cashCount.put(denomination, count);
+                }
+
+                System.out.println("DEBUG: Всего обработано строк: " + rowCount);
             }
+        } catch (SQLException e) {
+            System.out.println("DEBUG: Ошибка при выполнении запроса: " + e.getMessage());
+            throw e; // Пробрасываем исключение дальше
         }
+
         return cashCount;
     }
 
-    public static List<RemoveMoneyAction.CashStorage> getCashToRemove(int amountToRemove) {
-        System.out.println("DEBUG: Вызов getCashToRemove с amountToRemove=" + amountToRemove);
-        List<RemoveMoneyAction.CashStorage> cashToRemove = new ArrayList<>();
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(GET_CASH_TO_REMOVE_QUERY)) {
-            int remainingAmount = amountToRemove;
-            while (rs.next() && remainingAmount > 0) {
-                String idCash = rs.getString("ID_CASH");
-                String idAtm = rs.getString("ID_ATM");
-                String denominations = rs.getString("DENOMINATIONS");
-                String serialNumber = rs.getString("SERIAL_NUMBER");
-                Timestamp dateInserted = rs.getTimestamp("DATE_INSERTED");
-                int denomination = Integer.parseInt(denominations);
-                if (denomination <= remainingAmount) {
-                    cashToRemove.add(new RemoveMoneyAction.CashStorage(idCash, idAtm, denominations, serialNumber, dateInserted));
-                    remainingAmount -= denomination;
-                    System.out.println("DEBUG: Добавлена купюра для удаления: " + idCash);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("DEBUG: Ошибка в getCashToRemove: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return cashToRemove;
-    }
 
-    public static void removeCashFromDatabase(List<RemoveMoneyAction.CashStorage> cashToRemove) throws SQLException {
-        System.out.println("DEBUG: Вызов removeCashFromDatabase с количеством купюр=" + cashToRemove.size());
-        try (Connection conn = getConnection()) {
-            for (RemoveMoneyAction.CashStorage cash : cashToRemove) {
-                try (PreparedStatement pstmt = conn.prepareStatement(DELETE_CASH_QUERY)) {
-                    pstmt.setInt(1, Integer.parseInt(cash.idCash()));
-                    pstmt.executeUpdate();
-                    System.out.println("DEBUG: Удалена купюра: " + cash.idCash());
-                }
-            }
-        }
-    }
 
-  /*  public static void updateCardBalance(String cardNumber, double amount) throws SQLException {
-        System.out.println("DEBUG: Вызов updateCardBalance с cardNumber=" + cardNumber + ", amount=" + amount);
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE_BALANCE_QUERY)) {
-            statement.setDouble(1, amount);
-            statement.setString(2, cardNumber);
-            int rowsUpdated = statement.executeUpdate();
-            System.out.println("DEBUG: Баланс карты обновлён, строк обновлено: " + rowsUpdated);
-        }
-    }
-*/
     public static boolean checkCardInDatabase(String cardNumber) throws SQLException {
         System.out.println("DEBUG: Вызов checkCardInDatabase с cardNumber=" + cardNumber);
         try (Connection conn = getConnection();

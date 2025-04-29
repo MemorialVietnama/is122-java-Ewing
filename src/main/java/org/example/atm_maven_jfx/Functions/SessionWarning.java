@@ -15,10 +15,10 @@ import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
 public class SessionWarning {
 
     private final Stage primaryStage;
-    private Timeline inactivityTimeline; // Таймер бездействия
-    private Timeline countdownTimeline; // Таймер обратного отсчета
-    private int countdown = 10; // Начальное значение таймера
-    private boolean isRunning = false; // Флаг для проверки, запущен ли таймер
+    private Timeline inactivityTimeline;
+    private Timeline countdownTimeline;
+    private int countdown = 10;
+    private boolean isRunning = false;
 
     public SessionWarning(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -114,7 +114,7 @@ public class SessionWarning {
      * Перенаправляет пользователя в BlockWindow.
      */
     private void redirectToBlockWindow() {
-        primaryStage.hide(); // Скрываем текущее окно
+        primaryStage.hide();
         Stage blockStage = new Stage();
         BlockWindow blockWindow = new BlockWindow();
         try {
@@ -129,7 +129,7 @@ public class SessionWarning {
      */
     public void resetInactivityTimer() {
         if (inactivityTimeline != null) {
-            inactivityTimeline.stop(); // Останавливаем текущий таймер
+            inactivityTimeline.stop();
         }
         inactivityTimeline = new Timeline(new KeyFrame(Duration.seconds(20), _ -> {
             showWarning(); // Показываем предупреждение после 20 секунд бездействия

@@ -15,6 +15,10 @@ import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Windows.MainMenu.MainMenu;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Uslugi.Interfaces.ServiceLoader;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 public class UslugiLoader implements ServiceLoader {
     private final Scene scene;
     private final String cardNumber;
@@ -52,8 +56,23 @@ public class UslugiLoader implements ServiceLoader {
         );
         timeline.setCycleCount(1);
         timeline.setOnFinished(_ -> {
-            boolean success = DatabaseService.logTransaction(cardNumber, "Оплата Услуги", "Оплата услуги: " + serviceName + ", Сумма: " + amount)
-                    && DatabaseService.updateBalance(cardNumber, amount);
+            boolean success = DatabaseService.logTransaction(cardNumber, "Оплата Услуги", "Оплата услуги: " + serviceName + ", Сумма: " + amount);
+
+            if (success) {
+                // Прямой SQL-запрос для обновления баланса
+                try (Connection connection = DatabaseService.getConnection();
+                     PreparedStatement statement = connection.prepareStatement("UPDATE BALANCE_CARD SET BALANCE = BALANCE - ? WHERE FK_CARD = ?")) {
+
+                    statement.setDouble(1, amount); // Вычитаем сумму
+                    statement.setString(2, cardNumber); // Номер карты
+
+                    int rowsAffected = statement.executeUpdate();
+                    success = rowsAffected > 0; // Проверяем, была ли обновлена хотя бы одна строка
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    success = false; // Ошибка при выполнении запроса
+                }
+            }
 
             if (success) {
                 animateText(statusLabel, Duration.seconds(2), () -> {

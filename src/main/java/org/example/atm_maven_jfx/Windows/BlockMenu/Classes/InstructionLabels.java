@@ -5,7 +5,7 @@ import javafx.scene.layout.VBox;
 
 public class InstructionLabels extends VBox {
     public InstructionLabels() {
-        Label step1 = new Label("1. Вставьте карту в считыватель.");
+        Label step1 = new Label("1. Выберите тип входа.");
         Label step2 = new Label("2. Введите ваш PIN-код.");
         Label step3 = new Label("3. Выберите необходимую операцию.");
 

@@ -62,7 +62,7 @@ public class TransactionHistoryMenu implements TransactionHistory {
         backButton.setStyle("-fx-text-fill: red; -fx-font-size: 20px; -fx-background-color: white; -fx-cursor: hand;");
         backButton.setOnAction(_ -> {
             primaryStage.setScene(previousScene);
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            sessionWarning.stopInactivityCheck();
         });
 
         root.getChildren().addAll(titleLabel, tableView, backButton);

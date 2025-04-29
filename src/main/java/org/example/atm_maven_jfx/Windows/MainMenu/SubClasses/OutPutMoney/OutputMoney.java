@@ -84,7 +84,7 @@ public class OutputMoney {
                     -fx-cursor: hand;
                 """);
         backButton.setOnAction(_ -> {
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            sessionWarning.stopInactivityCheck(); // Сбрасываем таймер
             SceneTransition.changeSceneWithAnimation(primaryStage, previousScene);
         });
 

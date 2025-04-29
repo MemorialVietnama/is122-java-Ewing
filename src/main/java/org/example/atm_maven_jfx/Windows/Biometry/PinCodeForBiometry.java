@@ -131,7 +131,6 @@ public class PinCodeForBiometry {
 
         button.setOnAction(_ -> {
             sessionWarning.stopInactivityCheck(); // Останавливаем проверку бездействия
-            primaryStage.setScene(new BioAuthScene(primaryStage, null).createScene());
         });
 
         return button;

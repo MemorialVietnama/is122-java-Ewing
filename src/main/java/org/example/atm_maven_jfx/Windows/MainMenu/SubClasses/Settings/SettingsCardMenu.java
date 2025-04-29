@@ -149,19 +149,26 @@ public abstract class SettingsCardMenu implements SettingsMenu {
         changePin.setOnAction(_ -> {
             ChangePinMenu changePinMenu = new ChangePinMenu(primaryStage, scene, cardNumber);
             primaryStage.setScene(changePinMenu.getScene());
+            if (sessionWarning != null) {
+                sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
+            }
 
         });
 
         statsClient.setOnAction(_ -> {
             TransactionHistoryMenu transactionHistoryMenu = new TransactionHistoryMenu(primaryStage, scene, cardNumber);
             primaryStage.setScene(transactionHistoryMenu.getScene());
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            if (sessionWarning != null) {
+                sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
+            }
         });
 
         clientCards.setOnAction(_ -> {
             ClientCardsMenu clientCardsMenu = new ClientCardsMenu(primaryStage, scene, cardNumber);
             primaryStage.setScene(clientCardsMenu.getScene());
-            sessionWarning.checkInactivity(); // Сбрасываем таймер
+            if (sessionWarning != null) {
+                sessionWarning.stopInactivityCheck(); // Останавливаем таймер текущей сцены
+            }
         });
 
         root.getChildren().addAll(infoPanel, titleLabel, mainPage, backButton);

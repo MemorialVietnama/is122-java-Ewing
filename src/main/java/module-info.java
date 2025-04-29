@@ -8,6 +8,7 @@ module org.example.atm_maven_jfx {
     requires org.bytedeco.opencv;
     requires jdk.jsobject;
     requires java.net.http;
+    requires com.google.gson;
 
     opens org.example.atm_maven_jfx to javafx.fxml, javafx.base;
     opens org.example.atm_maven_jfx.AdminSrc.Window.Service to javafx.fxml, javafx.base;
