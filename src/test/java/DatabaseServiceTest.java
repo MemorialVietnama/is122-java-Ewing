@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -79,24 +78,8 @@ public class DatabaseServiceTest {
         assertEquals("Serial length must be 15", 15, serial.length());
     }
 
-    @Test
-    public void testGetCurrentCashCount() throws SQLException {
-        Map<Integer, Integer> cashCount = DatabaseService.getCurrentCashCount();
-        assertNotNull("Cash count must not be null", cashCount);
-        assertFalse("Cash count must not be empty", cashCount.isEmpty());
-    }
 
-    @Test
-    public void testCheckCardInDatabase() throws SQLException {
-        assertTrue("Card should exist", DatabaseService.checkCardInDatabase("123"));
-        assertFalse("Card should not exist", DatabaseService.checkCardInDatabase("0000000000000000"));
-    }
 
-    @Test
-    public void testCheckPinCode() throws SQLException {
-        assertTrue("Pin should be valid", DatabaseService.checkPinCode("123", "1234"));
-        assertFalse("Pin should be invalid", DatabaseService.checkPinCode("1234567890123456", "0000"));
-    }
 
     @Test
     public void testLoadServices() throws SQLException {

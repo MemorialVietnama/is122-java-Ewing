@@ -83,7 +83,7 @@ public class DatabaseInitializer {
     /**
      * Вспомогательный метод для показа информационного окна
      */
-    private static void showAlert(String title, String message) {
+    public static void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);

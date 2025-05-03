@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Windows.AuthKeypadCard.AuthWithNumberCard;
-import org.example.atm_maven_jfx.Windows.Biometry.BioAuthScene;
+import org.example.atm_maven_jfx.Windows.Biometry.RecognitionTestScene;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -82,13 +82,13 @@ public class ButtonPanel {
         // Обработчик события кнопки
         button3.setOnAction(event -> {
             Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene currentScene = currentStage.getScene(); // Сохраняем текущую сцену
-
-            // Создание новой сцены с передачей предыдущей
-            Scene bioAuthScene = new BioAuthScene(currentStage, currentScene).createScene();
-
-            // Установка новой сцены
-            currentStage.setScene(bioAuthScene);
+            try {
+                RecognitionTestScene recognitionScene = new RecognitionTestScene(primaryStage);
+                Scene bioAuthScene = recognitionScene.createScene();
+                currentStage.setScene(bioAuthScene);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
 
         // Контейнер для кнопки и метки
