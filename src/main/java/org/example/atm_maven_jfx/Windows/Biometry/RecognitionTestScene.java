@@ -1,5 +1,7 @@
 package org.example.atm_maven_jfx.Windows.Biometry;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -14,7 +16,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.example.atm_maven_jfx.Database.DatabaseService.*;
 
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.opencv_core.Mat;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.bytedeco.opencv.global.opencv_imgproc.COLOR_BGR2RGB;
 import static org.bytedeco.opencv.global.opencv_imgproc.cvtColor;
@@ -197,28 +199,23 @@ public class RecognitionTestScene {
         System.out.println("[DEBUG] Начало подготовки изображения для отправки");
 
         try {
-// 1. Получаем изображение из ImageView
+            // 1. Получаем изображение из ImageView
             WritableImage writableImage = imageView.snapshot(null, null);
-
             int width = (int) writableImage.getWidth();
             int height = (int) writableImage.getHeight();
 
-// 2. Создаём BufferedImage нужного размера и типа
+            // 2. Создаём BufferedImage
             BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-// 3. Копируем пиксели вручную
-            PixelReader pixelReader = writableImage.getPixelReader();
             WritableRaster raster = bufferedImage.getRaster();
             DataBufferInt dataBuffer = (DataBufferInt) raster.getDataBuffer();
             int[] pixelData = dataBuffer.getData();
 
+            // 3. Копируем пиксели
+            PixelReader pixelReader = writableImage.getPixelReader();
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     int argb = pixelReader.getArgb(x, y);
-                    int r = (argb >> 16) & 0xFF;
-                    int g = (argb >> 8) & 0xFF;
-                    int b = argb & 0xFF;
-                    pixelData[y * width + x] = (r << 16) | (g << 8) | b;
+                    pixelData[y * width + x] = argb & 0x00FFFFFF; // Игнорируем альфа-канал
                 }
             }
 
@@ -227,93 +224,187 @@ public class RecognitionTestScene {
             ImageIO.write(bufferedImage, "jpg", baos);
             byte[] imageBytes = baos.toByteArray();
 
-            // 4. Настраиваем соединение
+            // 5. Настраиваем соединение
             HttpURLConnection connection = (HttpURLConnection) new URL(SERVER_URL).openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----boundary");
 
-            // 5. Отправляем данные
+            // 6. Отправляем данные
             try (OutputStream os = connection.getOutputStream()) {
-                // Записываем multipart заголовок
                 String header = """
-                        ------boundary\r
-                        Content-Disposition: form-data; name="file"; filename="face.jpg"\r
-                        Content-Type: image/jpeg\r
-                        \r
-                        """;
+                ------boundary\r
+                Content-Disposition: form-data; name="file"; filename="face.jpg"\r
+                Content-Type: image/jpeg\r
+                \r
+                """;
                 os.write(header.getBytes(StandardCharsets.UTF_8));
-
-                // Записываем само изображение
                 os.write(imageBytes);
-
-                // Записываем конец запроса
-                String footer = "\r\n------boundary--\r\n";
-                os.write(footer.getBytes(StandardCharsets.UTF_8));
+                os.write("\r\n------boundary--\r\n".getBytes(StandardCharsets.UTF_8));
             }
 
-            // 6. Обрабатываем ответ
+            // 7. Обрабатываем ответ
             int responseCode = connection.getResponseCode();
             System.out.println("[DEBUG] Код ответа сервера: " + responseCode);
 
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (InputStream is = connection.getInputStream()) {
-                    // Читаем ответ как строку для отладки
-                    String responseString = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-                    System.out.println("[DEBUG] Ответ сервера: " + responseString);
+            try (InputStream is = responseCode == 200 ? connection.getInputStream() : connection.getErrorStream()) {
+                String responseString = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println("[DEBUG] Ответ сервера: " + responseString);
 
-                    // Парсим JSON
-                    ObjectMapper mapper = new ObjectMapper();
-                    RecognitionResponse response = mapper.readValue(responseString, RecognitionResponse.class);
+                ObjectMapper mapper = new ObjectMapper();
 
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("Подтверждение");
-                        alert.setHeaderText("Вы распознаны!");
-                        alert.setContentText("Вы действительно хотите продолжить как: " + response.getFullName() + "?");
+                Platform.runLater(() -> {
+                    try {
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            RecognitionResponse response = mapper.readValue(responseString, RecognitionResponse.class);
 
-                        ButtonType yesButton = new ButtonType("Да", ButtonBar.ButtonData.YES);
-                        ButtonType noButton = new ButtonType("Нет", ButtonBar.ButtonData.NO);
-                        alert.getButtonTypes().setAll(yesButton, noButton);
-
-                        Optional<ButtonType> result = alert.showAndWait();
-                        if (result.isPresent() && result.get() == yesButton) {
-                            PinCodeForBiometry pinScene = new PinCodeForBiometry(primaryStage, response.getCardNumber());
-                            primaryStage.setScene(pinScene.getScene());
+                            if (response.isSuccess()) {
+                                handleSuccessResponse(response);
+                            } else {
+                                resultLabel.setText("Распознавание не удалось");
+                            }
                         } else {
-                            resultLabel.setText("Подтверждение отменено. Попробуйте снова.");
+                            JsonNode errorNode = mapper.readTree(responseString);
+                            String errorMsg = errorNode.path("error").asText("Неизвестная ошибка");
+                            String details = errorNode.path("details").asText("");
+                            resultLabel.setText("Ошибка: " + errorMsg + "\n" + details);
                         }
-                    });
-                }
-            } else {
-                String errorResponse = new String(connection.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
-                Platform.runLater(() -> resultLabel.setText("Ошибка сервера: " + errorResponse));
+                    } catch (IOException ex) {
+                        handleJsonParseError(ex, responseString);
+                    }
+                });
             }
         } catch (Exception e) {
-            Platform.runLater(() -> resultLabel.setText("Ошибка: " + e.getMessage()));
-            e.printStackTrace();
+            Platform.runLater(() -> resultLabel.setText("Ошибка: " + getRootCauseMessage(e)));
+            logger.log(Level.SEVERE, "Ошибка при отправке запроса", e);
         }
     }
 
-    private void handleJsonParseError(IOException ex, String responseBody) {
-        logger.log(Level.SEVERE, "Ошибка парсинга JSON: " + responseBody, ex);
-        resultLabel.setText("Ошибка обработки ответа сервера: " + ex.getMessage());
+    private void handleSuccessResponse(RecognitionResponse response) {
+        String resultsInfo = response.getResults().stream()
+                .map(r -> String.format("Карта: %s | Совпадение: %s | Уверенность: %.2f%%",
+                        r.getCardClass(),
+                        r.isMatched() ? "Да" : "Нет",
+                        r.getConfidence()))
+                .collect(Collectors.joining("\n"));
+
+        String confirmationText = String.format(
+                """
+                        Лучшее совпадение:
+                        ФИО: %s
+                        Номер карты: %s
+                        Точность: %.2f%%
+                        
+                        Все результаты:
+                        %s""",
+                response.getBestMatch().getFullName(),
+                response.getClientInfo().getCardNumber(), // Исправлено здесь
+                response.getBestMatch().getConfidence(),
+                resultsInfo
+        );
+
+        // Остальная часть метода без изменений
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтверждение личности");
+        alert.setHeaderText("Успешное распознавание!");
+        alert.setContentText(confirmationText);
+
+        ButtonType yesButton = new ButtonType("Подтвердить", ButtonBar.ButtonData.YES);
+        ButtonType noButton = new ButtonType("Отмена", ButtonBar.ButtonData.NO);
+        alert.getButtonTypes().setAll(yesButton, noButton);
+
+        alert.getDialogPane().setStyle("-fx-font-size: 14px;");
+        alert.getDialogPane().lookupButton(yesButton).setStyle("-fx-font-weight: bold;");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == yesButton) {
+            PinCodeForBiometry pinScene = new PinCodeForBiometry(
+                    primaryStage,
+                    response.getClientInfo().getCardNumber() // Исправлено здесь
+            );
+            primaryStage.setScene(pinScene.getScene());
+        } else {
+            resultLabel.setText("Действие отменено пользователем");
+        }
     }
+
+    private String getRootCauseMessage(Throwable e) {
+        while (e.getCause() != null) e = e.getCause();
+        return e.getMessage() != null ? e.getMessage() : "Unknown error";
+    }
+
+    private void handleJsonParseError(IOException ex, String responseBody) {
+        String errorMsg = String.format("Ошибка парсинка JSON: %s\nОтвет сервера: %s",
+                ex.getMessage(),
+                responseBody);
+        logger.log(Level.SEVERE, errorMsg);
+        Platform.runLater(() ->
+                resultLabel.setText("Ошибка обработки ответа сервера. Проверьте логи."));
+    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RecognitionResponse {
-        @JsonProperty("FullName")
-        private String fullName;
-
-        @JsonProperty("CardNumber")
-        private String cardNumber;
-
         @JsonProperty("success")
         private boolean success;
 
+        @JsonProperty("best_match")
+        private BestMatch bestMatch;
+
+        @JsonProperty("client_info")
+        private ClientInfo clientInfo;
+
+        @JsonProperty("results")
+        private List<RecognitionResult> results;
+
         // Геттеры
-        public String getFullName() { return fullName; }
-        public String getCardNumber() { return cardNumber; }
         public boolean isSuccess() { return success; }
+        public BestMatch getBestMatch() { return bestMatch; }
+        public ClientInfo getClientInfo() { return clientInfo; }
+        public List<RecognitionResult> getResults() { return results; }
+
+        public static class BestMatch {
+
+            @JsonProperty("confidence")
+            private double confidence;
+
+            @JsonProperty("full_name")
+            private String fullName;
+
+            @JsonProperty("card_number")
+            private String cardNumber;
+
+            public double getConfidence() { return confidence; }
+
+            public String getFullName() { return fullName; }
+            public String getCardNumber() { return cardNumber; }
+        }
+
+        public static class ClientInfo {
+
+            @JsonProperty("card_number")
+            private String cardNumber;
+
+            @JsonProperty("balance")
+            private double balance;
+
+            public String getCardNumber() { return cardNumber; }
+            public double getBalance() { return balance; }
+        }
+
+        public static class RecognitionResult {
+            @JsonProperty("class")
+            private String cardClass;
+
+            @JsonProperty("confidence")
+            private double confidence;
+
+            @JsonProperty("matched")
+            private boolean matched;
+
+            // Геттеры
+            public String getCardClass() { return cardClass; }
+            public double getConfidence() { return confidence; }
+
+            public boolean isMatched() { return matched; }
+        }
     }
-
-
 }
