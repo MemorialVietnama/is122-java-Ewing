@@ -48,6 +48,7 @@ import static org.bytedeco.opencv.global.opencv_imgproc.cvtColor;
 import static org.bytedeco.opencv.global.opencv_objdetect.CASCADE_SCALE_IMAGE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
 
 public class RecognitionTestScene {
     private final Stage primaryStage;
@@ -84,20 +85,38 @@ public class RecognitionTestScene {
 
         Label userInfo = new Label("Посмотрите в камеру, пока не появится квадрат, а после нажмите \"Обработать\"");
         userInfo.setWrapText(true);
-        userInfo.setStyle("-fx-font-size: 32px; -fx-font-weight: bold;");
+        userInfo.setStyle("""
+        -fx-font-size: 32px;
+        -fx-font-weight: bold;
+        -fx-text-fill: white;
+        -fx-background-color: rgba(0,0,0,0.5);
+        -fx-padding: 15 20;
+        -fx-background-radius: 10;
+        -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 5);
+    """);
 
         imageView = new ImageView();
         imageView.setFitWidth(640);
         imageView.setFitHeight(480);
         imageView.setPreserveRatio(true);
+        imageView.setStyle("-fx-border-color: white; -fx-border-width: 3px;");
 
         canvas = new Canvas(640, 480);
         gc = canvas.getGraphicsContext2D();
 
         StackPane videoPane = new StackPane(imageView, canvas);
+        videoPane.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);");
 
         resultLabel = new Label("Результат будет здесь...");
         resultLabel.setWrapText(true);
+        resultLabel.setStyle("""
+        -fx-font-size: 20px;
+        -fx-text-fill: red;
+        -fx-background-color: rgba(255,255,255,0.1);
+        -fx-padding: 15 20;
+        -fx-background-radius: 8;
+        -fx-max-width: 600px;
+    """);
 
         Button sendButton = new Button("Отправить запрос на /recognize");
         sendButton.setStyle("-fx-font-size: 16px; -fx-padding: 10 20; -fx-background-color: #4CAF50; -fx-text-fill: white;");
@@ -113,11 +132,28 @@ public class RecognitionTestScene {
                 resultLabel.setText("Ошибка: Лицо не обнаружено. Подождите, пока появится квадрат.");
             }
         });
+        Button backButton = new Button("Назад");
+        backButton.setStyle("""
+        -fx-font-size: 16px;
+        -fx-padding: 10 20;
+        -fx-background-color: #f44336;
+        -fx-text-fill: white;
+        -fx-cursor: hand;
+        """);
+        backButton.setOnAction(_ -> {
+            // Останавливаем камеру
+            if (capture != null && capture.isOpened()) {
+                capture.release();
+            }
 
-        VBox root = new VBox(20, userInfo, videoPane, sendButton, resultLabel);
+            // Переключаемся обратно на BlockWindow
+            BlockWindow.showWithPreloader(primaryStage);
+        });
+
+        VBox root = new VBox(20, userInfo, videoPane, sendButton, resultLabel, backButton);
         root.setAlignment(Pos.CENTER);
         root.setPadding(new Insets(40));
-        root.setStyle("-fx-background-color: #f9f9f9;");
+        root.setStyle("-fx-background-color: red;");
 
         startCamera();
         return new Scene(root, 1920, 1080);
@@ -309,7 +345,9 @@ public class RecognitionTestScene {
         alert.setHeaderText("Успешное распознавание!");
         alert.setContentText(confirmationText);
 
+
         ButtonType yesButton = new ButtonType("Подтвердить", ButtonBar.ButtonData.YES);
+        
         ButtonType noButton = new ButtonType("Отмена", ButtonBar.ButtonData.NO);
         alert.getButtonTypes().setAll(yesButton, noButton);
 
@@ -360,7 +398,7 @@ public class RecognitionTestScene {
         public BestMatch getBestMatch() { return bestMatch; }
         public ClientInfo getClientInfo() { return clientInfo; }
         public List<RecognitionResult> getResults() { return results; }
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class BestMatch {
 
             @JsonProperty("confidence")
@@ -377,7 +415,7 @@ public class RecognitionTestScene {
             public String getFullName() { return fullName; }
             public String getCardNumber() { return cardNumber; }
         }
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class ClientInfo {
 
             @JsonProperty("card_number")
@@ -389,7 +427,7 @@ public class RecognitionTestScene {
             public String getCardNumber() { return cardNumber; }
             public double getBalance() { return balance; }
         }
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class RecognitionResult {
             @JsonProperty("class")
             private String cardClass;

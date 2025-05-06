@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Functions.SceneTransition;
 import org.example.atm_maven_jfx.Functions.SessionWarning;
+import org.example.atm_maven_jfx.Windows.BlockMenu.BlockWindow;
 import org.example.atm_maven_jfx.Windows.MainMenu.MainMenu;
 
 import java.sql.SQLException;
@@ -131,6 +132,9 @@ public class PinCodeForBiometry {
 
         button.setOnAction(_ -> {
             sessionWarning.stopInactivityCheck(); // Останавливаем проверку бездействия
+
+            // Переход на BlockWindow через showWithPreloader
+            BlockWindow.showWithPreloader(primaryStage);
         });
 
         return button;
