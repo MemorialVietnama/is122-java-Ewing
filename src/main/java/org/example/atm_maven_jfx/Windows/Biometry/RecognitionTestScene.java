@@ -339,7 +339,7 @@ public class RecognitionTestScene {
                 resultsInfo
         );
 
-        // Остальная часть метода без изменений
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение личности");
         alert.setHeaderText("Успешное распознавание!");
