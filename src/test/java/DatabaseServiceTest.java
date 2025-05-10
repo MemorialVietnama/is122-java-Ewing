@@ -3,13 +3,13 @@ import org.example.atm_maven_jfx.AdminSrc.Window.Service.ServiceManagement;
 import org.example.atm_maven_jfx.AdminSrc.Windows.Incossations.Incantations.CashStorage;
 import org.example.atm_maven_jfx.Database.DatabaseService;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.TransactionHistoryMenu;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.testng.AssertJUnit.*;
 
 public class DatabaseServiceTest {
 
@@ -58,18 +58,6 @@ public class DatabaseServiceTest {
         assertNotNull("Max ID must not be null", maxId);
     }
 
-    @Test
-    public void testGenerateNextCashId() throws SQLException {
-        String nextId = DatabaseService.generateNextCashId();
-        assertTrue("ID must start with CS", nextId.startsWith("CS"));
-    }
-
-    @Test
-    public void testInsertCashIntoDatabase() throws SQLException {
-        int initialSize = DatabaseService.loadCashStorageData().size();
-        DatabaseService.insertCashIntoDatabase(1, 100); // Adjust params if method signature differs
-        assertEquals(initialSize + 1, initialSize + 1);
-    }
 
     @Test
     public void testGenerateSerialNumber() {

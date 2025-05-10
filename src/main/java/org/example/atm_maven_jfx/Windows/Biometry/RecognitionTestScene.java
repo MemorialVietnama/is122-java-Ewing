@@ -136,8 +136,8 @@ public class RecognitionTestScene {
         backButton.setStyle("""
         -fx-font-size: 16px;
         -fx-padding: 10 20;
-        -fx-background-color: #f44336;
-        -fx-text-fill: white;
+        -fx-background-color: white;
+        -fx-text-fill: black;
         -fx-cursor: hand;
         """);
         backButton.setOnAction(_ -> {

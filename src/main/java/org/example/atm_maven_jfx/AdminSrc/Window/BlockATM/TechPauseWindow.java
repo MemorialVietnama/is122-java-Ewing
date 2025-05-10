@@ -43,7 +43,7 @@ public class TechPauseWindow {
                """);
         titleText.setFill(Color.WHITE);
 
-        Text apologyText = new Text("Просим прощения от лица EvillBank");
+        Text apologyText = new Text("Приносим извинения от лица EvillBank");
         apologyText.setStyle("""
                -fx-font-family: Arial, Helvetica, sans-serif;
                -fx-font-size: 40;

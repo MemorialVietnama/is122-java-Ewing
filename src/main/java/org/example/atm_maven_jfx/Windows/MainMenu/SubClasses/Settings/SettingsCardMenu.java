@@ -141,7 +141,7 @@ public abstract class SettingsCardMenu implements SettingsMenu {
 
         buttonBox.getChildren().add(changePin);
         buttonBox.getChildren().add(statsClient);
-        buttonBox.getChildren().add(clientCards);
+        // buttonBox.getChildren().add(clientCards);
 
         HBox mainPage = new HBox(10, clientInfoBox, buttonBox);
         mainPage.setAlignment(Pos.CENTER);

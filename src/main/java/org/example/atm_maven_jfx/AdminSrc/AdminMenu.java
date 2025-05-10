@@ -78,7 +78,6 @@ public class AdminMenu {
         // Кнопка "Открыть MainMenu"
         Button mainMenuButton = ButtonUtil.createButton("Открыть MainMenu", defaultStyle, hoverStyle, pressedStyle);
         mainMenuButton.setOnAction(_ -> {
-            // Пример номера карты (можно заменить на реальный)
             String cardNumber = "1234567891234567";
             MainMenu mainMenu = new MainMenu(primaryStage, cardNumber);
             primaryStage.setScene(mainMenu.getScene());

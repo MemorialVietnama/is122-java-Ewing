@@ -3,7 +3,7 @@
 
 SET NAMES UTF8;
 SET SQL DIALECT 3;
-CONNECT 'localhost/3050:C:/Users/Vlad/Desktop/kursa4_2025/localdb.fdb' USER 'SYSDBA' PASSWORD '010802';
+CONNECT 'localhost/3050:src/main/resources/org/example/atm_maven_jfx/Database/ATM_MODEL_DBASE.fdb' USER 'SYSDBA' PASSWORD '010802';
 SET AUTODDL ON;
 
 /* ----- Creating Tables ----- */

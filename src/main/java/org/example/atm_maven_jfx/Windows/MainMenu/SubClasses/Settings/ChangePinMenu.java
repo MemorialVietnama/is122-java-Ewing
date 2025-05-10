@@ -18,6 +18,7 @@ import org.example.atm_maven_jfx.Functions.InfoPanel;
 import org.example.atm_maven_jfx.Functions.SessionWarning;
 import org.example.atm_maven_jfx.Windows.MainMenu.SubClasses.Settings.Interfaces.ChangePinMenuInterface;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -212,13 +213,14 @@ public class ChangePinMenu implements ChangePinMenuInterface {
 
     @Override
     public boolean updatePinInDatabase(String cardNumber, String oldPin, String newPin) {
-        String url = "jdbc:firebirdsql://localhost:3050/C:/ATMV_MODEL_DBASE";
-        String username = "SYSDBA";
-        String password = "010802";
+        String DATABASE_PATH = "src/main/resources/org/example/atm_maven_jfx/Database/ATM_MODEL_DBASE.fdb";
+        String JDBC_URL = "jdbc:firebirdsql:localhost/3050:" + new File(DATABASE_PATH).getAbsolutePath();
+        String USER = "SYSDBA";
+        String PASSWORD = "010802";
 
         String query = "UPDATE CLIENT_CARD SET PIN_CODE = ? WHERE NUMBER_CARD = ? AND PIN_CODE = ?";
 
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
              PreparedStatement stmt = connection.prepareStatement(query)) {
 
             stmt.setString(1, newPin);
